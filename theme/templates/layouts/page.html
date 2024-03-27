@@ -1,0 +1,15 @@
+{{template "base" .}}
+
+{{define "header"}}
+    <title>{{.SiteParams.name}} | {{.PageParams.title}}</title>
+{{end}}
+
+{{define "content"}}
+
+    <h1>{{.PageParams.title}}</h1>
+    {{block "pathToPage" .}}{{end}}
+    <p class="subtitle">{{.PageParams.summary}}</p>
+
+    {{ .Body }}
+
+{{end}}

@@ -1,0 +1,49 @@
+{{template "base" .}}
+
+{{define "header"}}
+    <title>{{.SiteParams.name}} | {{.PageParams.title}}</title>
+{{end}}
+
+{{define "projectList"}}
+    {{range $section := .PageParams.listSections}}
+        <h2 id="{{$section.name}}"><a class="anchor" href="#{{$section.name}}">#</a> {{$section.name}}</h2>
+        {{range $project := $section.items}}
+            <p><a href="{{$project.link}}"><strong>{{$project.name}}</strong></a>
+            {{if $project.location}}
+                | <em>{{$project.location}}</em>
+            {{end}}
+            {{if $project.date}}
+                | <em>{{$project.date}}</em>
+            {{end}}
+            </p>
+            {{if or $project.beginning $project.description}}
+                <p><strong><em>{{$project.beginning}}</em></strong>{{$project.description}}</p>
+            {{end}}
+            <p>
+                {{if $project.links}}
+                    |
+                    {{range $link := $project.links}}
+                        <a href="{{$link.link}}">{{$link.name}}</a> |
+                    {{end}}
+                {{end}}
+            </p>
+        {{end}}
+    {{end}}
+{{end}}
+
+{{define "content"}}
+
+    <h1>{{.PageParams.title}}</h1>
+    {{block "pathToPage" .}}{{end}}
+    <p class="subtitle">{{.PageParams.summary}}</p>
+
+    {{if $.PageParams.pagesBeforeContent}}
+        {{template "projectList" .}}
+        <hr>
+        {{ .Body }}
+    {{else}}
+        {{ .Body }}
+        {{template "projectList" .}}
+    {{end}}
+    
+{{end}}

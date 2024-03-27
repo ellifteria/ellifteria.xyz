@@ -1,0 +1,19 @@
+{{define "pathToPage"}}
+    {{if .PageParams.path}}
+        <div class="pathToPage">
+            <p>
+                <a href="/">~</a>
+                {{range $page := .PageParams.path}}
+                    /
+                    <a href="{{$page.link}}" {{if $page.self}}class="self"{{end}}><strong>{{$page.name}}</strong></a>
+                {{end}}
+            </p>
+        </div>
+    {{else if eq .PageParams.navbarName "home"}}
+        <div class="pathToPage">
+            <p>
+                <a href="/">~</a>
+            </p>
+        </div>
+    {{end}}
+{{end}}

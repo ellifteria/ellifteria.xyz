@@ -1,0 +1,37 @@
+{{template "base" .}}
+
+{{define "header"}}
+    <title>{{.SiteParams.name}} | {{.PageParams.title}}</title>
+{{end}}
+
+{{define "pageLinks"}}
+    {{range $page := .PageParams.pages}}
+        <p>
+        <a href="{{$page.link}}"><strong>{{$page.name}}</strong></a>
+        {{if $page.date}}
+        | <em>{{$page.date}}</em>
+        {{end}}
+        {{if $page.summary}}
+            <br>
+            {{$page.summary}}
+        {{end}}
+        </p>
+    {{end}}
+{{end}}
+
+{{define "content"}}
+
+    <h1>{{.PageParams.title}}</h1>
+    {{block "pathToPage" .}}{{end}}
+    <p class="subtitle">{{.PageParams.summary}}</p>
+
+    {{if $.PageParams.pagesBeforeContent}}
+        {{template "pageLinks" .}}
+        <hr>
+        {{ .Body }}
+    {{else}}
+        {{ .Body }}
+        {{template "pageLinks" .}}
+    {{end}}
+
+{{end}}

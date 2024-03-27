@@ -1,0 +1,237 @@
+
+<!DOCTYPE html>
+<html>
+
+    <head>
+
+        <meta charset="UTF-8">
+        <link rel="stylesheet" href="/css/main.css">
+
+        
+    <title>ellifteria.xyz | esterel, racket, and rhombus</title>
+
+
+        
+
+<script>
+    if (typeof main === "undefined"){
+        var main = function() {};
+    }
+</script>
+
+
+
+        
+
+<link rel="apple-touch-icon-precomposed" sizes="57x57" href="apple-touch-icon-57x57.png" />
+<link rel="apple-touch-icon-precomposed" sizes="114x114" href="apple-touch-icon-114x114.png" />
+<link rel="apple-touch-icon-precomposed" sizes="72x72" href="apple-touch-icon-72x72.png" />
+<link rel="apple-touch-icon-precomposed" sizes="144x144" href="apple-touch-icon-144x144.png" />
+<link rel="apple-touch-icon-precomposed" sizes="60x60" href="apple-touch-icon-60x60.png" />
+<link rel="apple-touch-icon-precomposed" sizes="120x120" href="apple-touch-icon-120x120.png" />
+<link rel="apple-touch-icon-precomposed" sizes="76x76" href="apple-touch-icon-76x76.png" />
+<link rel="apple-touch-icon-precomposed" sizes="152x152" href="apple-touch-icon-152x152.png" />
+<link rel="icon" type="image/png" href="favicon-196x196.png" sizes="196x196" />
+<link rel="icon" type="image/png" href="favicon-96x96.png" sizes="96x96" />
+<link rel="icon" type="image/png" href="favicon-32x32.png" sizes="32x32" />
+<link rel="icon" type="image/png" href="favicon-16x16.png" sizes="16x16" />
+<link rel="icon" type="image/png" href="favicon-128.png" sizes="128x128" />
+<meta name="application-name" content="&nbsp;"/>
+<meta name="msapplication-TileColor" content="#FFFFFF" />
+<meta name="msapplication-TileImage" content="mstile-144x144.png" />
+<meta name="msapplication-square70x70logo" content="mstile-70x70.png" />
+<meta name="msapplication-square150x150logo" content="mstile-150x150.png" />
+<meta name="msapplication-wide310x150logo" content="mstile-310x150.png" />
+<meta name="msapplication-square310x310logo" content="mstile-310x310.png" />
+
+
+    </head>
+
+    <body onload="main()">
+        <header>
+            
+
+<div class="column">
+    <div class="navigation">
+        |
+        
+            
+                <a href="/">home</a> |
+            
+        
+            
+                <a href="/notes">notes</a> |
+            
+        
+            
+                <a href="/tips">tip</a> |
+            
+        
+            
+                <a href="/bookshelf">bookshelf</a> |
+            
+        
+    </div>
+    <div class="breadcrumb">
+        <a href="/">ellifteria.xyz</a>
+    </div>
+</div>
+
+
+        </header>
+        
+        <article>
+            <section>
+                
+
+    <h1>esterel, racket, and rhombus</h1>
+    
+    
+        <div class="pathToPage">
+            <p>
+                <a href="/">~</a>
+                
+                    /
+                    <a href="/tip" ><strong>tip</strong></a>
+                
+                    /
+                    <a href="/tip/2024/nu/esterel/" ><strong>esterel</strong></a>
+                
+                    /
+                    <a href="/tip/2024/nu/esterel/03/26/" class="self"><strong>26 mar 2024: an introduction</strong></a>
+                
+            </p>
+        </div>
+    
+
+    <p class="subtitle">an introduction</p>
+
+    
+        <h2 id="what-is-esterel"><a class="anchor" href="#what-is-esterel">#</a> What is Esterel?</h2>
+<p>Esterel is a synchronous reactive programming language.
+I wrote a bit about Esterel <a href="/notes/2024/nu/esterel/index.html">here</a>.</p>
+<h2 id="what-am-i-doing"><a class="anchor" href="#what-am-i-doing">#</a> What am I doing?</h2>
+<p>I am working with Lukas Lazarek<label for="sidenote--ll"
+class="margin-toggle sidenote-number">
+</label>
+<input type="checkbox"
+id="sidenote--ll"
+class="margin-toggle"/>
+<span class="sidenote">
+<a href="https://github.com/LLazarek">Lukas's GitHub</a>
+</span>
+on implementing Esterel in the Rhombus language<label for="sidenote--rhombus"
+class="margin-toggle sidenote-number">
+</label>
+<input type="checkbox"
+id="sidenote--rhombus"
+class="margin-toggle"/>
+<span class="sidenote">
+<a href="https://docs.racket-lang.org/rhombus/index.html">Rhombus on the Racket docs</a>
+</span>
+.</p>
+<h2 id="why-am-i-doing-this"><a class="anchor" href="#why-am-i-doing-this">#</a> Why am I doing this?</h2>
+<p>So that you can write Esterel programs like this:</p>
+<pre><code class="language-scheme">def_signal: A
+
+def strlPrgm:
+    esterel:
+        emit(A)
+
+react(strlPrgm)
+</code></pre>
+<p>instead of like this!</p>
+<pre><code class="language-scheme">(define-signal A)
+
+(define strlPrgm
+    (esterel
+        (emit A)))
+
+(react! strlPrgm)
+</code></pre>
+<h2 id="what-has-been-completed-so-far"><a class="anchor" href="#what-has-been-completed-so-far">#</a> What has been completed so far?</h2>
+<p>We started today, so not much.</p>
+<p>But, we have gotten some basic bindings<label for="sidenote--basicBindings"
+class="margin-toggle sidenote-number">
+</label>
+<input type="checkbox"
+id="sidenote--basicBindings"
+class="margin-toggle"/>
+<span class="sidenote">
+right now, we're building off of original bindings written by <a href="https://github.com/mflatt">Matthew Flatt</a> for a subset of <a href="https://github.com/rfindler">Robby Findler's</a> <a href="https://docs.racket-lang.org/esterel/index.html">Esterel in Racket</a>
+</span>
+working!</p>
+<h2 id="what-needed-to-be-fixed"><a class="anchor" href="#what-needed-to-be-fixed">#</a> What needed to be fixed?</h2>
+<p>To understand what needed to be fixed, it's important to realize that Rhombus is built on Racket and is backwards compatible with Racket.
+Mostly.
+Functions, maps, primitives, and many other Rhombus data types are equivalent to their Racket counterparts.
+And it turns out, in an earlier version of the Rhombus Prototype, lists in Rhombus were also equivalent to their Racket counterparts.
+That means, you could use Rhombus <code>List</code>s in Racket functions in this earlier version.</p>
+<p>Now, however, Rhombus <code>List</code>s are NOT equivalent to Racket lists.
+For example, this would NOT raise an error in an earlier version on Rhombus but now does:</p>
+<pre><code class="language-scheme">#lang rhombus
+
+import:
+    lib(&quot;racket/base.rkt&quot;) as base
+
+base.#{list-tail}([1, 2, 3, 4, 5], 2)
+</code></pre>
+<p>There is a fix though!
+While Rhombus <code>List</code>s are different than Racket lists, Rhombus <code>PairList</code>s ARE equivalent to Racket lists.
+That means that this code does work in Rhombus:</p>
+<pre><code class="language-scheme">#lang rhombus
+
+import:
+    lib(&quot;racket/base.rkt&quot;) as base
+
+base.#{list-tail}(PairList(1, 2, 3, 4, 5), 2)
+</code></pre>
+<p>Basically, the issue with three of the Rhombus macros was that they were passing Rhombus <code>List</code>s to Racket functions, which did not work.
+Converting the Rhombus <code>List</code>s to <code>PairList</code>s fixed these bugs!</p>
+<h2 id="what-else-has-been-done"><a class="anchor" href="#what-else-has-been-done">#</a> What else has been done?</h2>
+<p><code>sustain</code> can now be used in Rhombus!
+Like with <code>emit</code>, the <code>sustain</code> function is exposed through a wrapper function from the Racket implementation.</p>
+<pre><code class="language-scheme">#lang rhombus
+
+def_signal: A
+
+def sustainTest:
+    esterel:
+        sustain(A)
+</code></pre>
+<pre><code class="language-scheme">&gt; react(sustainTest)
+{#{'#&lt;signal: A&gt;}: #true}
+&gt; react(sustainTest)
+{#{'#&lt;signal: A&gt;}: #true}
+&gt; react(sustainTest)
+{#{'#&lt;signal: A&gt;}: #true}
+</code></pre>
+
+        
+    
+
+    
+
+
+            </section>
+        </article>
+
+        <footer>
+            
+
+    <div>Powered by
+        <a href="https://golang.org/">Go</a> and
+        <a href="https://github.com/ellifteria/grafe">graf&emacr;</a>
+    </div>
+
+
+        </footer>
+    </body>
+
+</html>
+
+
+
+
+
+
