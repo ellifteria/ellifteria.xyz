@@ -1,0 +1,238 @@
+
+<!DOCTYPE html>
+<html>
+
+    <head>
+
+        <meta charset="UTF-8">
+        <link rel="stylesheet" href="/css/main.css">
+
+        
+    <title>ellifteria.xyz | intro to esterel</title>
+
+
+        
+
+<script>
+    if (typeof main === "undefined"){
+        var main = function() {};
+    }
+</script>
+
+
+
+        
+
+<link rel="apple-touch-icon-precomposed" sizes="57x57" href="apple-touch-icon-57x57.png" />
+<link rel="apple-touch-icon-precomposed" sizes="114x114" href="apple-touch-icon-114x114.png" />
+<link rel="apple-touch-icon-precomposed" sizes="72x72" href="apple-touch-icon-72x72.png" />
+<link rel="apple-touch-icon-precomposed" sizes="144x144" href="apple-touch-icon-144x144.png" />
+<link rel="apple-touch-icon-precomposed" sizes="60x60" href="apple-touch-icon-60x60.png" />
+<link rel="apple-touch-icon-precomposed" sizes="120x120" href="apple-touch-icon-120x120.png" />
+<link rel="apple-touch-icon-precomposed" sizes="76x76" href="apple-touch-icon-76x76.png" />
+<link rel="apple-touch-icon-precomposed" sizes="152x152" href="apple-touch-icon-152x152.png" />
+<link rel="icon" type="image/png" href="favicon-196x196.png" sizes="196x196" />
+<link rel="icon" type="image/png" href="favicon-96x96.png" sizes="96x96" />
+<link rel="icon" type="image/png" href="favicon-32x32.png" sizes="32x32" />
+<link rel="icon" type="image/png" href="favicon-16x16.png" sizes="16x16" />
+<link rel="icon" type="image/png" href="favicon-128.png" sizes="128x128" />
+<meta name="application-name" content="&nbsp;"/>
+<meta name="msapplication-TileColor" content="#FFFFFF" />
+<meta name="msapplication-TileImage" content="mstile-144x144.png" />
+<meta name="msapplication-square70x70logo" content="mstile-70x70.png" />
+<meta name="msapplication-square150x150logo" content="mstile-150x150.png" />
+<meta name="msapplication-wide310x150logo" content="mstile-310x150.png" />
+<meta name="msapplication-square310x310logo" content="mstile-310x310.png" />
+
+
+    </head>
+
+    <body onload="main()">
+        <header>
+            
+
+<div class="column">
+    <div class="navigation">
+        |
+        
+            
+                <a href="/">home</a> |
+            
+        
+            
+                <a href="/notes">notes</a> |
+            
+        
+            
+                <a href="/tips">tip</a> |
+            
+        
+            
+                <a href="/bookshelf">bookshelf</a> |
+            
+        
+    </div>
+    <div class="breadcrumb">
+        <a href="/">ellifteria.xyz</a>
+    </div>
+</div>
+
+
+        </header>
+        
+        <article>
+            <section>
+                
+
+    <h1>intro to esterel</h1>
+    
+    
+        <div class="pathToPage">
+            <p>
+                <a href="/">~</a>
+                
+                    /
+                    <a href="/notes" ><strong>notes</strong></a>
+                
+                    /
+                    <a href="/notes/2024/nu/esterel" ><strong>esterel</strong></a>
+                
+                    /
+                    <a href="/notes/2024/nu/esterel/03/26/intro" class="self"><strong>intro</strong></a>
+                
+            </p>
+        </div>
+    
+
+    <p class="subtitle">introduction to esterel and esterel in racket</p>
+
+    <h2 id="what-is-esterel"><a class="anchor" href="#what-is-esterel">#</a> What is Esterel?</h2>
+<p>Esterel<label for="sidenote--esterelLink"
+class="margin-toggle sidenote-number">
+</label>
+<input type="checkbox"
+id="sidenote--esterelLink"
+class="margin-toggle"/>
+<span class="sidenote">
+<a href="https://en.wikipedia.org/wiki/Esterel">Esterel on Wikipedia</a>
+</span>
+is a synchronous reactive programming language developed in France in the 80s.
+In Esterel, operations are executed in parallel threads with specific synchronous timing.</p>
+<p>There are a few implementations of Esterel or Esterel-like languages<label for="sidenote--hipHopJs"
+class="margin-toggle sidenote-number">
+</label>
+<input type="checkbox"
+id="sidenote--hipHopJs"
+class="margin-toggle"/>
+<span class="sidenote">
+such as <a href="https://github.com/manuel-serrano/hiphop">HipHop.js</a>
+</span>.
+Here, I'm using<label for="sidenote--devRktStrl"
+class="margin-toggle sidenote-number">
+</label>
+<input type="checkbox"
+id="sidenote--devRktStrl"
+class="margin-toggle"/>
+<span class="sidenote">
+...<a href="/tip/2024/nu/esterel/index.html">and working on adding to</a>...
+</span>
+the Racket implementation of Esterel<label for="sidenote--racketEsterel"
+class="margin-toggle sidenote-number">
+</label>
+<input type="checkbox"
+id="sidenote--racketEsterel"
+class="margin-toggle"/>
+<span class="sidenote">
+<a href="https://docs.racket-lang.org/esterel/index.html">Esterel in Racket</a>
+</span>.</p>
+<p>Writing Esterel in Racket is be done using:</p>
+<pre><code class="language-scheme">#lang racket
+
+(require esterel/full)
+
+(esterel
+    ...)
+</code></pre>
+<p>In Esterel, <code>signal</code>s are &quot;variables&quot;; they are <code>emit</code>ed by Esterel programs<label for="sidenote--definingSignals"
+class="margin-toggle sidenote-number">
+</label>
+<input type="checkbox"
+id="sidenote--definingSignals"
+class="margin-toggle"/>
+<span class="sidenote">
+<code>define-signal</code> defines <code>signal</code>s globally while <code>with-signal</code> allows you to locally define <code>signal</code>s.
+</span>
+.</p>
+<pre><code class="language-scheme">#lang racket
+
+(require esterel/full)
+
+(define-signal red)
+
+(define forever-red
+    (esterel
+        (sustain red)))
+</code></pre>
+<p>Running this code doesn't visibly do anything.
+You need to <code>react!</code> to &quot;ask&quot; Esterel if there are any signals <code>emit</code>ted.</p>
+<pre><code class="language-scheme">&gt; (react! forever-red)
+'#hash((#&lt;signal: red&gt; . #t))
+</code></pre>
+<p>To control the timing of when Esterel signals are <code>emit</code>ted, <code>pause</code> is used.</p>
+<pre><code class="language-scheme">#lang racket
+
+(require esterel/full)
+
+(define-signal red)
+
+(define forever-red
+    (esterel
+        (pause)
+        (sustain red)))
+</code></pre>
+<pre><code class="language-scheme">&gt; (react! forever-red)
+'#hash()
+&gt; (react! forever-red)
+'#hash((#&lt;signal: red&gt; . #t))
+</code></pre>
+<p>Since <code>forever-red</code> is <code>pause</code>d on the first step, there is no signal <code>emit</code>ted.
+<code>react!</code>ing again walks to the next step and causes <code>red</code> to be <code>sustain</code>ed.</p>
+<p>To run multiple threads in parallel, use <code>par</code>:</p>
+<pre><code class="language-scheme">#lang racket
+
+(require esterel/full)
+
+(define-signal red)
+
+(define forever-red
+    (esterel
+        (par
+            (sustain red)
+            (sustain green))))
+</code></pre>
+<pre><code class="language-scheme">&gt; (react! forever-red)
+'#hash((#&lt;signal: green&gt; . #t) (#&lt;signal: red&gt; . #t))
+</code></pre>
+
+
+
+            </section>
+        </article>
+
+        <footer>
+            
+
+    <div>Powered by
+        <a href="https://golang.org/">Go</a> and
+        <a href="https://github.com/ellifteria/grafe">graf&emacr;</a>
+    </div>
+
+
+        </footer>
+    </body>
+
+</html>
+
+
+
+
