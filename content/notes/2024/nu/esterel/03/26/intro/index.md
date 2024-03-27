@@ -42,7 +42,7 @@ Here, I'm using<label for="sidenote--devRktStrl"
        id="sidenote--devRktStrl"
        class="margin-toggle"/>
 <span class="sidenote">
-    ...[[/tip/2024/nu/esterel/index|and working on adding to]]...
+    ...[[/tiwo/2024/nu/esterel/index|and working on adding to]]...
 </span>
 the Racket implementation of Esterel<label for="sidenote--racketEsterel"
        class="margin-toggle sidenote-number">

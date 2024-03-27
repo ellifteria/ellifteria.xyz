@@ -5,8 +5,8 @@ navbarItems:
         link: /
     -   name: notes
         link: /notes
-    -   name: tip
-        link: /tips
+    -   name: tiwo
+        link: /tiwo
     -   name: bookshelf
         link: /bookshelf
 ---

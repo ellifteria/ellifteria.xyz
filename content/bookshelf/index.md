@@ -6,6 +6,7 @@ path:
     -   name: books
         link: /books
         self: true
+navbarName: bookshelf
 ---
 
 ## Currently Reading

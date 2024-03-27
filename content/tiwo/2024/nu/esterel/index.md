@@ -3,10 +3,10 @@ title: esterel in racket
 summary: working on developing esterel in racket
 template: pageList
 path:
-    -   name: tip
-        link: /tip
+    -   name: tiwo
+        link: /tiwo
     -   name: esterel
-        link: /tip/2024/nu/esterel
+        link: /tiwo/2024/nu/esterel
         self: true
 pages:
     -   name: "26 mar 2024: an introduction"

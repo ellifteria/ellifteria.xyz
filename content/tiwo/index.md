@@ -1,10 +1,10 @@
 ---
-title: t(hings) i(n) p(rogress)
+title: t(hings) i('m) w(orking) o(n)
 summary: a collection of things i'm currently working on
 template: projectList
 path:
-    -   name: tip
-        link: /tip
+    -   name: tiwo
+        link: /tiwo
         self: true
 listSections:
     -   name: in progress
@@ -17,4 +17,5 @@ listSections:
         items:
     -   name: completed
         items:
+navbarName: tiwo
 ---

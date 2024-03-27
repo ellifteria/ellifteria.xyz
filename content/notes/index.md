@@ -10,4 +10,5 @@ pages:
     -   name: esterel
         summary: "esterel in racker: synchonous reactive programming"
         link: 2024/nu/esterel/
+navbarName: notes
 ---

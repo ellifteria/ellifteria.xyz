@@ -3,12 +3,12 @@ title: esterel, racket, and rhombus
 summary: an introduction
 template: pageList
 path:
-    -   name: tip
-        link: /tip
+    -   name: tiwo
+        link: /tiwo
     -   name: esterel
-        link: /tip/2024/nu/esterel/
+        link: /tiwo/2024/nu/esterel/
     -   name: "26 mar 2024: an introduction"
-        link: /tip/2024/nu/esterel/03/26/
+        link: /tiwo/2024/nu/esterel/03/26/
         self: true
 ---
 
