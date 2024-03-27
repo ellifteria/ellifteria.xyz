@@ -206,6 +206,16 @@ def sustainTest:
 &gt; react(sustainTest)
 {#{'#&lt;signal: A&gt;}: #true}
 </code></pre>
+<p>There's also a new shorthand for defining Esterel programs!
+Instead of:</p>
+<pre><code class="language-scheme">def strlPrgm:
+    esterel:
+        emit(A)
+</code></pre>
+<p>You can now just write!</p>
+<pre><code class="language-scheme">def_strl strlPrgm:
+    emit(A)
+</code></pre>
 
         
     
