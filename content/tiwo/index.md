@@ -13,9 +13,25 @@ listSections:
                 date: mar 2024–
                 name: "esterel in racket"
                 link: 2024/nu/esterel/
+            -   id: grafe
+                date: jan 2024–
+                name: grafē
+                link: https://github.com/ellifteria/grafe
+            -   id: pyflowbat
+                date: jun 2022–
+                name: PyFlowBAT
+                link: https://elliberes.me/projects/pyflowbat/
     -   name: on hold
         items:
     -   name: completed
         items:
+            -   id: spreadsheet2code
+                date: feb 2024
+                name: spreadsheet2code
+                link: https://spreadsheet2code.onrender.com
+            -   id: munin
+                date: nov 2023–dec 2023
+                name: munin
+                link: https://elliberes.me/projects/munin
 navbarName: tiwo
 ---

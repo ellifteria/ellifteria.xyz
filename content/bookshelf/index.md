@@ -13,25 +13,35 @@ navbarName: bookshelf
 
 | Progress | Book | Author |
 |:---:|:---:|:---:|
+70% | *A Desolation Called Peace* | Arkady Martine
 
 ### On Hold at the Moment
 
 | Progress | Book | Author |
 |:---:|:---:|:---:|
 <!-- 5% | *Hadji Murat* | Leo Tolstoy -->
-<!-- 1% | *Seasons of Albadone* | Elan Marche -->
 <!-- 5% | *Born in Tibet* | Chogyam Trungpa -->
 
 ## Read
 
 ### Fiction
 
+#### 2024
+
+|Rating | Book | Author|
+|:---:|:---:|:---:|
+⭐️ ⭐️ ⭐️ ⭐️ ⭐️ | *Bookshops & Bonedust* | Travis Baldree
+⭐️ ⭐️ ⭐️ ⭐️ | *Squire* | Nadia Shammas
+🌟 🌟 🌟 🌟 🌟 | *The Tombs of Atuan* | Ursula K. Le Guin
+⭐️ ⭐️ ⭐️ ⭐️ | *The Moth Keeper* | Kay O'Neill
+⭐️ ⭐️ ⭐️ ⭐️ | *The Expert System's Champion* | Adrian Tchaikosvky
+⭐ ⭐ ⭐ ⭐ | *Seasons of Albadone* | Elan Marche
+🌟 🌟 🌟 🌟 🌟 | *A Wizard of Earthea* | Ursula K. LeGuin
+
 #### 2023
 
 |Rating | Book | Author|
 |:---:|:---:|:---:|
-⭐ ⭐ ⭐ ⭐ | *Seasons of Albadone* | Elan Marche
-🌟 🌟 🌟 🌟 🌟 | *A Wizard of Earthea* | Ursula K. LeGuin
 ⭐️ ⭐️ | *No One Is Talking About This* | Patricia Lockwood
 ⭐️ ⭐️ ⭐️| *Elsewhere* | Yan Ge
 0️⃣ | *Middlesex* | Jeffrey Eugenides
@@ -126,8 +136,13 @@ navbarName: bookshelf
 
 | Book | Author |
 |:---:|:---:|
-Map for the Missing | Belinda Tang
-The Adventures of Amina al-Sirafi | Shannon Chakraborty
-The Water Outlaws | S. L. Huang
+*A Canticle for Leibowitz* | Walter M. Miller Jr.
+*Hyperion* | Dan Simmons
+*City of Last Chances* | Adrian Tchaikovsky
+*Ananthem* | Neal Stephenson
+*Empire of Silence* | Christopher Ruocchio
+*Map for the Missing* | Belinda Tang
+<!-- *The Adventures of Amina al-Sirafi* | Shannon Chakraborty
+*The Water Outlaws* | S. L. Huang -->
 
-... and too many more to add 😄!
+... and too many more!
