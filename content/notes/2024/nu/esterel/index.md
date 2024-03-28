@@ -1,6 +1,6 @@
 ---
 title: esterel
-summary: "esterel in racker: synchonous reactive programming"
+summary: "esterel in racket: synchonous reactive programming"
 template: pageList
 path:
     -   name: notes
@@ -10,6 +10,6 @@ path:
         self: true
 pages:
     -   name: intro
-        summary: "esterel in racker: synchonous reactive programming"
+        summary: "esterel in racket: synchonous reactive programming"
         link: 03/26/intro/
 ---

@@ -3,8 +3,8 @@ title: "my bookshelf"
 summary: books i've read, am reading, and am going to read
 template: page
 path:
-    -   name: books
-        link: /books
+    -   name: bookshelf
+        link: /bookshelf
         self: true
 navbarName: bookshelf
 ---

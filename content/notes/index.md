@@ -8,7 +8,10 @@ path:
         self: true
 pages:
     -   name: esterel
-        summary: "esterel in racker: synchonous reactive programming"
+        summary: "esterel in racket: synchonous reactive programming"
         link: 2024/nu/esterel/
+    -   name: gc
+        summary: garbage collection
+        link: 2024/nu/gc/
 navbarName: notes
 ---
