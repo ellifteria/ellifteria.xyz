@@ -13,7 +13,7 @@ navbarName: bookshelf
 
 | Progress | Book | Author |
 |:---:|:---:|:---:|
-70% | *A Desolation Called Peace* | Arkady Martine
+15% | *Empire of Silence* | Christopher Ruocchio
 
 ### On Hold at the Moment
 
@@ -30,6 +30,7 @@ navbarName: bookshelf
 
 |Rating | Book | Author|
 |:---:|:---:|:---:|
+⭐️ ⭐️ ⭐️ ⭐️ ⭐️ | *A Desolation Called Peace* | Arkady Martine
 ⭐️ ⭐️ ⭐️ ⭐️ ⭐️ | *Bookshops & Bonedust* | Travis Baldree
 ⭐️ ⭐️ ⭐️ ⭐️ | *Squire* | Nadia Shammas
 🌟 🌟 🌟 🌟 🌟 | *The Tombs of Atuan* | Ursula K. Le Guin
@@ -140,7 +141,6 @@ navbarName: bookshelf
 *Hyperion* | Dan Simmons
 *City of Last Chances* | Adrian Tchaikovsky
 *Ananthem* | Neal Stephenson
-*Empire of Silence* | Christopher Ruocchio
 *Map for the Missing* | Belinda Tang
 <!-- *The Adventures of Amina al-Sirafi* | Shannon Chakraborty
 *The Water Outlaws* | S. L. Huang -->

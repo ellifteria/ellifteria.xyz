@@ -13,6 +13,10 @@ listSections:
                 date: mar 2024–
                 name: "esterel in racket"
                 link: 2024/nu/esterel/
+            -   id: piper
+                date: mar 2024–
+                name: "piper: data pipes in rhombus"
+                link: https://github.com/ellifteria/piper
             -   id: grafe
                 date: jan 2024–
                 name: grafē
