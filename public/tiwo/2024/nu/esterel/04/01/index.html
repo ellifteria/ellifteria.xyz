@@ -1,0 +1,211 @@
+
+<!DOCTYPE html>
+<html>
+
+    <head>
+
+        <meta charset="UTF-8">
+        <link rel="stylesheet" href="/css/main.css">
+
+        
+    <title>ellifteria.xyz | 01 apr 2024: slow progress</title>
+
+
+        
+
+<script>
+    if (typeof main === "undefined"){
+        var main = function() {};
+    }
+</script>
+
+
+
+        
+
+<link rel="apple-touch-icon-precomposed" sizes="57x57" href="apple-touch-icon-57x57.png" />
+<link rel="apple-touch-icon-precomposed" sizes="114x114" href="apple-touch-icon-114x114.png" />
+<link rel="apple-touch-icon-precomposed" sizes="72x72" href="apple-touch-icon-72x72.png" />
+<link rel="apple-touch-icon-precomposed" sizes="144x144" href="apple-touch-icon-144x144.png" />
+<link rel="apple-touch-icon-precomposed" sizes="60x60" href="apple-touch-icon-60x60.png" />
+<link rel="apple-touch-icon-precomposed" sizes="120x120" href="apple-touch-icon-120x120.png" />
+<link rel="apple-touch-icon-precomposed" sizes="76x76" href="apple-touch-icon-76x76.png" />
+<link rel="apple-touch-icon-precomposed" sizes="152x152" href="apple-touch-icon-152x152.png" />
+<link rel="icon" type="image/png" href="favicon-196x196.png" sizes="196x196" />
+<link rel="icon" type="image/png" href="favicon-96x96.png" sizes="96x96" />
+<link rel="icon" type="image/png" href="favicon-32x32.png" sizes="32x32" />
+<link rel="icon" type="image/png" href="favicon-16x16.png" sizes="16x16" />
+<link rel="icon" type="image/png" href="favicon-128.png" sizes="128x128" />
+<meta name="application-name" content="&nbsp;"/>
+<meta name="msapplication-TileColor" content="#FFFFFF" />
+<meta name="msapplication-TileImage" content="mstile-144x144.png" />
+<meta name="msapplication-square70x70logo" content="mstile-70x70.png" />
+<meta name="msapplication-square150x150logo" content="mstile-150x150.png" />
+<meta name="msapplication-wide310x150logo" content="mstile-310x150.png" />
+<meta name="msapplication-square310x310logo" content="mstile-310x310.png" />
+
+
+    </head>
+
+    <body onload="main()">
+        <header>
+            
+
+<div class="column">
+    <div class="navigation">
+        |
+        
+            
+                <a href="/">home</a> |
+            
+        
+            
+                <a href="/notes">notes</a> |
+            
+        
+            
+                <a href="/tiwo">tiwo</a> |
+            
+        
+            
+                <a href="/bookshelf">bookshelf</a> |
+            
+        
+    </div>
+    <div class="breadcrumb">
+        <a href="/">ellifteria.xyz</a>
+    </div>
+</div>
+
+
+        </header>
+        
+        <article>
+            <section>
+                
+
+    <h1>01 apr 2024: slow progress</h1>
+    
+    
+        <div class="pathToPage">
+            <p>
+                <a href="/">~</a>
+                
+                    /
+                    <a href="/tiwo" ><strong>tiwo</strong></a>
+                
+                    /
+                    <a href="/tiwo/2024/nu/esterel/" ><strong>esterel</strong></a>
+                
+                    /
+                    <a href="/tiwo/2024/nu/esterel/04/01/" class="self"><strong>01 apr 2024: slow progress</strong></a>
+                
+            </p>
+        </div>
+    
+
+    <p class="subtitle">fixing rhombus bugs</p>
+
+    
+        <h2 id="any-updates"><a class="anchor" href="#any-updates">#</a> Any updates?</h2>
+<p>Quite a few actually!
+I added a couple features, made some changes to the syntax, and found a new bug.</p>
+<h2 id="what-did-i-add"><a class="anchor" href="#what-did-i-add">#</a> What did I add?</h2>
+<p>Starting off with a simple addition, <code>signal_index</code> is now in the Rhombus bindings!
+Like with <code>signal_name</code>, this is a wrapper for the Racket implementation.</p>
+<p>Moving on to the big one, in the Racket bindings, signals can have <code>value</code>s that they <code>emit</code> and/or <code>sustain</code>.
+In order for a signal to have a <code>value</code>, it has to have a <code>combine</code> parameter.
+Before, this could not be set in the Rhombus bindings.
+It can now!</p>
+<p>To set a <code>combine</code> parameter in Rhombus, use <code>{[$id, $combine], ...}</code> syntax:</p>
+<pre><code class="language-scheme">def_signal {[A, fun (x, y) : x + y], [B, fun (x, y) : x + y], [C, fun (x, y) : x + y]}
+
+def_strl strlPrgm:
+    sustain(A, 1) ||| sustain(B, 2) ||| sustain(C, 3)
+
+&gt; react(strlPrgm)
+{#{'#&lt;signal: C&gt;}: 3, #{'#&lt;signal: B&gt;}: 2, #{'#&lt;signal: A&gt;}: 1}
+</code></pre>
+<p>To define signals without <code>combine</code>, just use <code>def_signal {A, B, C}</code>.</p>
+<p>You may notice that <code>def_signal</code> looks a bit different, so...</p>
+<h2 id="new-syntax"><a class="anchor" href="#new-syntax">#</a> New syntax?</h2>
+<p>A couple of changes here:</p>
+<ol>
+<li><code>with_signals</code> -&gt; <code>with_signal</code> (to be consistent with <code>def_signal</code>)</li>
+<li><code>def_signal: A B C</code> -&gt; <code>def_signal {A, B, C}</code> (to be consistent with <code>with_signal {A, B, C}:</code>)</li>
+</ol>
+<h2 id="theres-a-bug"><a class="anchor" href="#theres-a-bug">#</a> There's a bug?</h2>
+<p>Yes.</p>
+<p>Say we have the following definition:</p>
+<pre><code class="language-scheme">def_strl strlPrgm:
+    with_signal {A}:
+        sustain(A)
+</code></pre>
+<p>This should work, right?<label for="sidenote--itDoes"
+class="margin-toggle sidenote-number">
+</label>
+<input type="checkbox"
+id="sidenote--itDoes"
+class="margin-toggle"/>
+<span class="sidenote">
+(yes, it should)
+</span>
+Well, unfortunately, it doesn't.
+What happens?
+When we run it the first time, we get:</p>
+<pre><code class="language-scheme">&gt; react(strlPrgm)
+{#{'#&lt;signal: A (0)&gt;}: #true}
+</code></pre>
+<p>That looked right.
+So where's the bug?
+Let's run it again:</p>
+<pre><code class="language-scheme">&gt; react(strlPrgm)
+match: no matching clause for Array(#{'#&lt;signal: A (0)&gt;}) [,bt for context]
+</code></pre>
+<p>There's the error.</p>
+<p>The issue is that in the Racket bindings, there is a <code>match</code> statement that cannot match an array of a single signal.
+However, this <code>match</code> statement should not be trying to match a single signal.
+Instead, it should be trying to match a vector of signals.</p>
+<p>And it does, for more than one signal.
+So this works:</p>
+<pre><code class="language-scheme">def_strl strlPrgm:
+    with_signal {A, B}:
+        sustain(A) || sustain(B)
+&gt; react(strlPrgm)
+{#{'#&lt;signal: B (1)&gt;}: #true, #{'#&lt;signal: A (0)&gt;}: #true}
+&gt; react(strlPrgm)
+{#{'#&lt;signal: B (1)&gt;}: #true, #{'#&lt;signal: A (0)&gt;}: #true}
+&gt; react(strlPrgm)
+{#{'#&lt;signal: B (1)&gt;}: #true, #{'#&lt;signal: A (0)&gt;}: #true}
+</code></pre>
+<p>So, there's a bug somewhere if there's a single signal being <code>emit</code>ted or <code>sustain</code>ed.
+I think I know where it is, I just need to do some debugging to fix it!</p>
+
+        
+    
+
+    
+
+
+            </section>
+        </article>
+
+        <footer>
+            
+
+    <div>Powered by
+        <a href="https://golang.org/">Go</a> and
+        <a href="https://github.com/ellifteria/grafe">graf&emacr;</a>
+    </div>
+
+
+        </footer>
+    </body>
+
+</html>
+
+
+
+
+
+

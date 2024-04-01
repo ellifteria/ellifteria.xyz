@@ -12,6 +12,9 @@ pages:
     -   name: "26 mar 2024: an introduction"
         summary: esterel, racket, and rhombus
         link: 03/26/
+    -   name: "01 apr 2024: slow progress"
+        summary: fixing bugs in rhombus
+        link: 04/01/
 contentBeforePages: true
 ---
 

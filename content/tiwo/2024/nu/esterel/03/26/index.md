@@ -1,6 +1,6 @@
 ---
-title: esterel, racket, and rhombus
-summary: an introduction
+title: "26 mar 2024: an introduction"
+summary: esterel, racket, and rhombus
 template: pageList
 path:
     -   name: tiwo
