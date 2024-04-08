@@ -1,13 +1,13 @@
 ---
-title: "26 mar 2024: an introduction"
-summary: esterel, racket, and rhombus
+title: "26 Mar 2024: An Introduction"
+summary: Esterel, Racket, and Rhombus
 template: pageList
 path:
-    -   name: tiwo
+    -   name: TIWO
         link: /tiwo
-    -   name: esterel
+    -   name: Esterel
         link: /tiwo/2024/nu/esterel/
-    -   name: "26 mar 2024: an introduction"
+    -   name: "26 Mar 2024: An Introduction"
         link: /tiwo/2024/nu/esterel/03/26/
         self: true
 ---

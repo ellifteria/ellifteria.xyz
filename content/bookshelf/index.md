@@ -1,19 +1,19 @@
 ---
-title: "my bookshelf"
-summary: books i've read, am reading, and am going to read
+title: "My Bookshelf"
+summary: Books I've Read, Am Reading, and Am Going to Read
 template: page
 path:
-    -   name: bookshelf
+    -   name: Bookshelf
         link: /bookshelf
         self: true
-navbarName: bookshelf
+navbarName: Bookshelf
 ---
 
 ## Currently Reading
 
 | Progress | Book | Author |
 |:---:|:---:|:---:|
-15% | *Empire of Silence* | Christopher Ruocchio
+26% | *The Lesser Devil* | Christopher Ruocchio
 
 ### On Hold at the Moment
 
@@ -30,6 +30,7 @@ navbarName: bookshelf
 
 |Rating | Book | Author|
 |:---:|:---:|:---:|
+🌟 🌟 🌟 🌟 🌟 | *Empire of Silence* | Christopher Ruocchio
 ⭐️ ⭐️ ⭐️ ⭐️ ⭐️ | *A Desolation Called Peace* | Arkady Martine
 ⭐️ ⭐️ ⭐️ ⭐️ ⭐️ | *Bookshops & Bonedust* | Travis Baldree
 ⭐️ ⭐️ ⭐️ ⭐️ | *Squire* | Nadia Shammas

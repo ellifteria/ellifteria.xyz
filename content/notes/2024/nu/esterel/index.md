@@ -1,15 +1,15 @@
 ---
-title: esterel
-summary: "esterel in racket: synchonous reactive programming"
+title: Esterel
+summary: "Esterel in Racket: Synchronous Reactive Programming"
 template: pageList
 path:
-    -   name: notes
+    -   name: Notes
         link: /notes
-    -   name: esterel
+    -   name: Esterel
         link: /notes/2024/nu/esterel
         self: true
 pages:
-    -   name: intro
-        summary: "esterel in racket: synchonous reactive programming"
+    -   name: Intro
+        summary: "Esterel in Racket: Synchronous Reactive Programming"
         link: 03/26/intro/
 ---

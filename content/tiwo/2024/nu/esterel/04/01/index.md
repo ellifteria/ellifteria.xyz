@@ -1,13 +1,13 @@
 ---
-title: "01 apr 2024: slow progress"
-summary: fixing rhombus bugs
+title: "01 Apr 2024: Slow Progress"
+summary: Fixing Rhombus Bugs
 template: pageList
 path:
-    -   name: tiwo
+    -   name: TIWO
         link: /tiwo
-    -   name: esterel
+    -   name: Esterel
         link: /tiwo/2024/nu/esterel/
-    -   name: "01 apr 2024: slow progress"
+    -   name: "01 Apr 2024: Slow Progress"
         link: /tiwo/2024/nu/esterel/04/01/
         self: true
 ---

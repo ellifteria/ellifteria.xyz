@@ -1,17 +1,17 @@
 ---
-title: notes
-summary: a collection of notes on various topics
+title: Notes
+summary: A Collection of Notes on Various Topics
 template: pageList
 path:
-    -   name: notes
-        link: /notes
+    -   name: Notes
+        link: /Notes
         self: true
 pages:
-    -   name: esterel
-        summary: "esterel in racket: synchonous reactive programming"
+    -   name: Esterel
+        summary: "Esterel in Racket: Synchronous Reactive Programming"
         link: 2024/nu/esterel/
-    -   name: gc
-        summary: garbage collection
+    -   name: GC
+        summary: Garbage Collection
         link: 2024/nu/gc/
-navbarName: notes
+navbarName: Notes
 ---

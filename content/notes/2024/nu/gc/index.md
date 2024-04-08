@@ -1,11 +1,11 @@
 ---
-title: gc
-summary: garbage collection
+title: GC
+summary: Garbage Collection
 template: pageList
 path:
-    -   name: notes
+    -   name: Notes
         link: /notes
-    -   name: gc
+    -   name: GC
         link: /notes/2024/nu/gc
         self: true
 pages:

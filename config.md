@@ -1,12 +1,12 @@
 ---
 name: ellifteria.xyz
 navbarItems:
-    -   name: home
+    -   name: Home
         link: /
-    -   name: notes
+    -   name: Notes
         link: /notes
-    -   name: tiwo
+    -   name: TIWO
         link: /tiwo
-    -   name: bookshelf
+    -   name: Bookshelf
         link: /bookshelf
 ---

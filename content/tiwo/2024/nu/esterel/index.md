@@ -1,20 +1,23 @@
 ---
-title: esterel in racket
-summary: working on developing esterel in racket
+title: Esterel in Racket
+summary: Working on Esterel in Racket
 template: pageList
 path:
-    -   name: tiwo
+    -   name: TIWO
         link: /tiwo
-    -   name: esterel
+    -   name: Esterel
         link: /tiwo/2024/nu/esterel
         self: true
 pages:
-    -   name: "26 mar 2024: an introduction"
-        summary: esterel, racket, and rhombus
+    -   name: "26 Mar 2024: An Introduction"
+        summary: Esterel, Racket, and Rhombus
         link: 03/26/
-    -   name: "01 apr 2024: slow progress"
-        summary: fixing bugs in rhombus
+    -   name: "01 Apr 2024: Slow Progress"
+        summary: Fixing Bugs in Rhombus
         link: 04/01/
+    -   name: "08 Apr 2024: Upgrading Signals"
+        summary: Adding Features and Fixing Bugs
+        link: 04/08/
 contentBeforePages: true
 ---
 

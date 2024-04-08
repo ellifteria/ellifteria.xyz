@@ -1,21 +1,21 @@
 ---
 title: ellifteria.xyz
-summary: elli's digital garden
+summary: Elli's Digital Garden
 template: home
 socials:
-    -   name: website
+    -   name: Website
         link: https://elliberes.me
-    -   name: github
+    -   name: GitHub
         link: https://github.com/ellifteria
-    -   name: mastodon
+    -   name: Mastodon
         link: https://discuss.systems/@ellifteria
 path: []
-navbarName: home
+navbarName: Home
 ---
 
-## sections
+## Sections
 
-- [[/tiwo/index|things i'm working on]]
-- [[/bookshelf/index|my bookshelf]]
-- [[/notes/index|notes]]
+- [[/tiwo/index|Things I'm Working On]]
+- [[/bookshelf/index|My Bookshelf]]
+- [[/notes/index|Notes]]
 <!-- - [[/thoughts/index|thoughts]] -->

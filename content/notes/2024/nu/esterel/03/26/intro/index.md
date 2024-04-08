@@ -1,13 +1,13 @@
 ---
-title: intro to esterel
-summary: introduction to esterel and esterel in racket
+title: Intro to Esterel
+summary: Introduction to Esterel and Esterel in Racket
 template: page
 path:
-    -   name: notes
+    -   name: Notes
         link: /notes
-    -   name: esterel
+    -   name: Esterel
         link: /notes/2024/nu/esterel
-    -   name: intro
+    -   name: Intro
         link: /notes/2024/nu/esterel/03/26/intro
         self: true
 ---
