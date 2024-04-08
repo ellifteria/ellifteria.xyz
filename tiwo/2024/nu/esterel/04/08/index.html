@@ -8,7 +8,7 @@
         <link rel="stylesheet" href="/css/main.css">
 
         
-    <title>ellifteria.xyz | Esterel in Racket</title>
+    <title>ellifteria.xyz | 08 Apr 2024: Upgrading Signals</title>
 
 
         
@@ -84,7 +84,7 @@
             <section>
                 
 
-    <h1>Esterel in Racket</h1>
+    <h1>08 Apr 2024: Upgrading Signals</h1>
     
     
         <div class="pathToPage">
@@ -95,61 +95,55 @@
                     <a href="/tiwo" ><strong>TIWO</strong></a>
                 
                     /
-                    <a href="/tiwo/2024/nu/esterel" class="self"><strong>Esterel</strong></a>
+                    <a href="/tiwo/2024/nu/esterel/" ><strong>Esterel</strong></a>
+                
+                    /
+                    <a href="/tiwo/2024/nu/esterel/04/01/" class="self"><strong>08 Apr 2024: Upgrading Signals</strong></a>
                 
             </p>
         </div>
     
 
-    <p class="subtitle">Working on Esterel in Racket</p>
+    <p class="subtitle">Adding Features and Fixing Bugs</p>
 
     
-        <h2 id="roadmap"><a class="anchor" href="#roadmap">#</a> Roadmap</h2>
+        <p>Remember the big change made last time?
+Well... I overwrote that.
+But!
+For good reason.</p>
+<p>Esterel <code>signal</code>s in Rhombus are much more powerful now.
+In fact, any <code>signal</code> possible to create in Racket can now be made in Rhombus too.</p>
+<h2 id="new-signal-syntax"><a class="anchor" href="#new-signal-syntax">#</a> New signal syntax?</h2>
+<p>So, now to define <code>signal</code>s, you use the pattern:</p>
+<pre><code class="language-scheme">def_signal {$signal_definition,...}
+</code></pre>
+<p>This is the same as last time.
+However, each signal definition is now a <code>SignalDefinition</code> which has the following forms:</p>
+<pre><code class="language-text">SignalDefinition:
+| '[$id_expr, ~memoryless, ~init $init_expr, ~combine $combine_expr]'
+| '[$id_expr, ~init $init_expr, ~combine $combine_expr]'
+| '[$id_expr, ~combine $combine_expr]'
+| '[$id_expr, ~single]'
+| '$id_expr'
+</code></pre>
+<p>So the example from last time <code>def_signal {[A, fun (x, y) : x + y], [B, fun (x, y) : x + y], [C, fun (x, y) : x + y]}</code> would now be:</p>
+<pre><code class="language-scheme">def_signal {[A, ~combine fun (x, y) : x + y], [B, ~combine fun (x, y) : x + y], [C, ~combine fun (x, y) : x + y]}
+</code></pre>
+<p>You need the <code>~combine</code> keyword preceding the combine function so that now, unlike before you can mix signals that have:</p>
 <ul>
-<li><input disabled="" type="checkbox"> Fix bugs in existing Rhombus library
-<ul>
-<li><input disabled="" type="checkbox"> Get examples working</li>
-<li><input checked="" disabled="" type="checkbox"> Fix <code>react</code>, <code>par</code>, and <code>|||</code></li>
+<li>just an <code>id</code></li>
+<li>an <code>id</code> and a <code>combine</code></li>
+<li>an <code>id</code>, a <code>combine</code>, and an <code>init</code></li>
+<li>a <code>memoryless</code> <code>id</code>, a <code>combine</code>, and an <code>init</code></li>
+<li>or are just <code>single</code></li>
 </ul>
-</li>
-<li><input disabled="" type="checkbox"> Add rest of the Racket bindings to Rhombus
-<ul>
-<li><input disabled="" type="checkbox"> Translate all Racket examples to Rhombus</li>
-<li><input checked="" disabled="" type="checkbox"> Add <code>sustain</code> to Rhombus</li>
-</ul>
-</li>
-<li><input disabled="" type="checkbox"> Fill out Racket/Rhombus library with the rest of the Esterel language</li>
-</ul>
-<h2 id="updates"><a class="anchor" href="#updates">#</a> Updates</h2>
+<p>This means that any <code>signal</code> that can be defined in the Racket implementation can now be defined in the Rhombus implementation!</p>
+<h2 id="bug-fixes"><a class="anchor" href="#bug-fixes">#</a> Bug fixes?</h2>
+<p>Last time, I mentioned there was a bug where <code>with_signal</code> would raise an error if it was <code>emit</code>ting only one <code>signal</code> on a subsequent <code>react</code>ion.
+That's been fixed now!
+This means that the bugs and limitations in <code>def_signal</code> and <code>with_signal</code> should now be all ironed out in the Rhombus implementation.</p>
 
         
-    
-        <p>
-        <a href="03/26/"><strong>26 Mar 2024: An Introduction</strong></a>
-        
-        
-            <br>
-            Esterel, Racket, and Rhombus
-        
-        </p>
-    
-        <p>
-        <a href="04/01/"><strong>01 Apr 2024: Slow Progress</strong></a>
-        
-        
-            <br>
-            Fixing Bugs in Rhombus
-        
-        </p>
-    
-        <p>
-        <a href="04/08/"><strong>08 Apr 2024: Upgrading Signals</strong></a>
-        
-        
-            <br>
-            Adding Features and Fixing Bugs
-        
-        </p>
     
 
     
