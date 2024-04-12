@@ -16,7 +16,6 @@ Remember the big change made last time?
 Well... I overwrote that.
 But!
 For good reason.
-
 Esterel `signal`s in Rhombus are much more powerful now.
 In fact, any `signal` possible to create in Racket can now be made in Rhombus too.
 

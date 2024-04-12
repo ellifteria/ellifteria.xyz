@@ -6,7 +6,7 @@
 
 {{define "projectList"}}
     {{range $section := .PageParams.listSections}}
-        <h2 id="{{$section.name}}"><a class="anchor" href="#{{$section.name}}">#</a> {{$section.name}}</h2>
+        <h2 id="{{$section.name}}">{{$section.name}}</h2>
         {{range $project := $section.items}}
             <p><a href="{{$project.link}}"><strong>{{$project.name}}</strong></a>
             {{if $project.location}}
@@ -33,16 +33,14 @@
 
 {{define "content"}}
 
-    <h1>{{.PageParams.title}}</h1>
-    {{block "pathToPage" .}}{{end}}
-    <p class="subtitle">{{.PageParams.summary}}</p>
+    {{block "pageHeading" .}}{{end}}
 
     {{if $.PageParams.pagesBeforeContent}}
         {{template "projectList" .}}
         <hr>
-        {{ .Body }}
+        {{template "mainText" .}}
     {{else}}
-        {{ .Body }}
+        {{template "mainText" .}}
         {{template "projectList" .}}
     {{end}}
     

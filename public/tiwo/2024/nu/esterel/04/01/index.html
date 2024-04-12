@@ -84,6 +84,7 @@
             <section>
                 
 
+    
     <h1>01 Apr 2024: Slow Progress</h1>
     
     
@@ -106,11 +107,14 @@
 
     <p class="subtitle">Fixing Rhombus Bugs</p>
 
+
     
-        <h2 id="any-updates"><a class="anchor" href="#any-updates">#</a> Any updates?</h2>
+        
+
+<h2 id="any-updates">Any updates?</h2>
 <p>Quite a few actually!
 I added a couple features, made some changes to the syntax, and found a new bug.</p>
-<h2 id="what-did-i-add"><a class="anchor" href="#what-did-i-add">#</a> What did I add?</h2>
+<h2 id="what-did-i-add">What did I add?</h2>
 <p>Starting off with a simple addition, <code>signal_index</code> is now in the Rhombus bindings!
 Like with <code>signal_name</code>, this is a wrapper for the Racket implementation.</p>
 <p>Moving on to the big one, in the Racket bindings, signals can have <code>value</code>s that they <code>emit</code> and/or <code>sustain</code>.
@@ -126,17 +130,17 @@ def_strl strlPrgm:
 &gt; react(strlPrgm)
 {#{'#&lt;signal: C&gt;}: 3, #{'#&lt;signal: B&gt;}: 2, #{'#&lt;signal: A&gt;}: 1}
 </code></pre>
-<p>To define signals without <code>combine</code>, just use <code>def_signal {A, B, C}</code>.</p>
-<p>You may notice that <code>def_signal</code> looks a bit different, so...</p>
-<h2 id="new-syntax"><a class="anchor" href="#new-syntax">#</a> New syntax?</h2>
+<p>To define signals without <code>combine</code>, just use <code>def_signal {A, B, C}</code>.
+You may notice that <code>def_signal</code> looks a bit different, so...</p>
+<h2 id="new-syntax">New syntax?</h2>
 <p>A couple of changes here:</p>
 <ol>
 <li><code>with_signals</code> -&gt; <code>with_signal</code> (to be consistent with <code>def_signal</code>)</li>
 <li><code>def_signal: A B C</code> -&gt; <code>def_signal {A, B, C}</code> (to be consistent with <code>with_signal {A, B, C}:</code>)</li>
 </ol>
-<h2 id="theres-a-bug"><a class="anchor" href="#theres-a-bug">#</a> There's a bug?</h2>
-<p>Yes.</p>
-<p>Say we have the following definition:</p>
+<h2 id="theres-a-bug">There's a bug?</h2>
+<p>Yes.
+Say we have the following definition:</p>
 <pre><code class="language-scheme">def_strl strlPrgm:
     with_signal {A}:
         sustain(A)
@@ -162,8 +166,8 @@ Let's run it again:</p>
 <pre><code class="language-scheme">&gt; react(strlPrgm)
 match: no matching clause for Array(#{'#&lt;signal: A (0)&gt;}) [,bt for context]
 </code></pre>
-<p>There's the error.</p>
-<p>The issue is that in the Racket bindings, there is a <code>match</code> statement that cannot match an array of a single signal.
+<p>There's the error.
+The issue is that in the Racket bindings, there is a <code>match</code> statement that cannot match an array of a single signal.
 However, this <code>match</code> statement should not be trying to match a single signal.
 Instead, it should be trying to match a vector of signals.</p>
 <p>And it does, for more than one signal.
@@ -180,6 +184,8 @@ So this works:</p>
 </code></pre>
 <p>So, there's a bug somewhere if there's a single signal being <code>emit</code>ted or <code>sustain</code>ed.
 I think I know where it is, I just need to do some debugging to fix it!</p>
+
+
 
         
     

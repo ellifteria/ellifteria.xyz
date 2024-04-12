@@ -53,7 +53,7 @@ def strlPrgm:
 react(strlPrgm)
 ```
 
-instead of like this!
+And not like this!
 
 ```scheme
 (define-signal A)
@@ -68,7 +68,6 @@ instead of like this!
 ## What has been completed so far?
 
 We started today, so not much.
-
 But, we have gotten some basic bindings<label for="sidenote--basicBindings"
        class="margin-toggle sidenote-number">
 </label>

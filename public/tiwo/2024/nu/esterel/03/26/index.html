@@ -84,6 +84,7 @@
             <section>
                 
 
+    
     <h1>26 Mar 2024: An Introduction</h1>
     
     
@@ -106,11 +107,14 @@
 
     <p class="subtitle">Esterel, Racket, and Rhombus</p>
 
+
     
-        <h2 id="what-is-esterel"><a class="anchor" href="#what-is-esterel">#</a> What is Esterel?</h2>
+        
+
+<h2 id="what-is-esterel">What is Esterel?</h2>
 <p>Esterel is a synchronous reactive programming language.
 I wrote a bit about Esterel <a href="/notes/2024/nu/esterel/index.html">here</a>.</p>
-<h2 id="what-am-i-doing"><a class="anchor" href="#what-am-i-doing">#</a> What am I doing?</h2>
+<h2 id="what-am-i-doing">What am I doing?</h2>
 <p>I am working with Lukas Lazarek<label for="sidenote--ll"
 class="margin-toggle sidenote-number">
 </label>
@@ -130,7 +134,7 @@ class="margin-toggle"/>
 <a href="https://docs.racket-lang.org/rhombus/index.html">Rhombus on the Racket docs</a>
 </span>
 .</p>
-<h2 id="why-am-i-doing-this"><a class="anchor" href="#why-am-i-doing-this">#</a> Why am I doing this?</h2>
+<h2 id="why-am-i-doing-this">Why am I doing this?</h2>
 <p>So that you can write Esterel programs like this:</p>
 <pre><code class="language-scheme">def_signal: A
 
@@ -140,7 +144,7 @@ def strlPrgm:
 
 react(strlPrgm)
 </code></pre>
-<p>instead of like this!</p>
+<p>And not like this!</p>
 <pre><code class="language-scheme">(define-signal A)
 
 (define strlPrgm
@@ -149,9 +153,9 @@ react(strlPrgm)
 
 (react! strlPrgm)
 </code></pre>
-<h2 id="what-has-been-completed-so-far"><a class="anchor" href="#what-has-been-completed-so-far">#</a> What has been completed so far?</h2>
-<p>We started today, so not much.</p>
-<p>But, we have gotten some basic bindings<label for="sidenote--basicBindings"
+<h2 id="what-has-been-completed-so-far">What has been completed so far?</h2>
+<p>We started today, so not much.
+But, we have gotten some basic bindings<label for="sidenote--basicBindings"
 class="margin-toggle sidenote-number">
 </label>
 <input type="checkbox"
@@ -161,7 +165,7 @@ class="margin-toggle"/>
 right now, we're building off of original bindings written by <a href="https://github.com/mflatt">Matthew Flatt</a> for a subset of <a href="https://github.com/rfindler">Robby Findler's</a> <a href="https://docs.racket-lang.org/esterel/index.html">Esterel in Racket</a>
 </span>
 working!</p>
-<h2 id="what-needed-to-be-fixed"><a class="anchor" href="#what-needed-to-be-fixed">#</a> What needed to be fixed?</h2>
+<h2 id="what-needed-to-be-fixed">What needed to be fixed?</h2>
 <p>To understand what needed to be fixed, it's important to realize that Rhombus is built on Racket and is backwards compatible with Racket.
 Mostly.
 Functions, maps, primitives, and many other Rhombus data types are equivalent to their Racket counterparts.
@@ -188,7 +192,7 @@ base.#{list-tail}(PairList(1, 2, 3, 4, 5), 2)
 </code></pre>
 <p>Basically, the issue with three of the Rhombus macros was that they were passing Rhombus <code>List</code>s to Racket functions, which did not work.
 Converting the Rhombus <code>List</code>s to <code>PairList</code>s fixed these bugs!</p>
-<h2 id="what-else-has-been-done"><a class="anchor" href="#what-else-has-been-done">#</a> What else has been done?</h2>
+<h2 id="what-else-has-been-done">What else has been done?</h2>
 <p><code>sustain</code> can now be used in Rhombus!
 Like with <code>emit</code>, the <code>sustain</code> function is exposed through a wrapper function from the Racket implementation.</p>
 <pre><code class="language-scheme">#lang rhombus
@@ -216,6 +220,8 @@ Instead of:</p>
 <pre><code class="language-scheme">def_strl strlPrgm:
     emit(A)
 </code></pre>
+
+
 
         
     

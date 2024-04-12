@@ -6,10 +6,8 @@
 
 {{define "content"}}
 
-    <h1>{{.PageParams.title}}</h1>
-    {{block "pathToPage" .}}{{end}}
-    <p class="subtitle">{{.PageParams.summary}}</p>
+    {{block "pageHeading" .}}{{end}}
 
-    {{ .Body }}
+    {{template "mainText" .}}
 
 {{end}}

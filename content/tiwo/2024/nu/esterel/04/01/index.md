@@ -39,7 +39,6 @@ def_strl strlPrgm:
 ```
 
 To define signals without `combine`, just use `def_signal {A, B, C}`.
-
 You may notice that `def_signal` looks a bit different, so...
 
 ## New syntax?
@@ -52,7 +51,6 @@ A couple of changes here:
 ## There's a bug?
 
 Yes.
-
 Say we have the following definition:
 
 ```scheme
@@ -89,7 +87,6 @@ match: no matching clause for Array(#{'#<signal: A (0)>}) [,bt for context]
 ```
 
 There's the error.
-
 The issue is that in the Racket bindings, there is a `match` statement that cannot match an array of a single signal.
 However, this `match` statement should not be trying to match a single signal.
 Instead, it should be trying to match a vector of signals.

@@ -21,16 +21,14 @@
 
 {{define "content"}}
 
-    <h1>{{.PageParams.title}}</h1>
-    {{block "pathToPage" .}}{{end}}
-    <p class="subtitle">{{.PageParams.summary}}</p>
+    {{block "pageHeading" .}}{{end}}
 
     {{if $.PageParams.pagesBeforeContent}}
         {{template "pageLinks" .}}
         <hr>
-        {{ .Body }}
+        {{template "mainText" .}}
     {{else}}
-        {{ .Body }}
+        {{template "mainText" .}}
         {{template "pageLinks" .}}
     {{end}}
 

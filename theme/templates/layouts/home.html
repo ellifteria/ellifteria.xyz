@@ -6,19 +6,17 @@
 
 {{define "content"}}
 
-    <h1>{{.PageParams.title}}</h1>
-    {{block "pathToPage" .}}{{end}}
-    <p class="subtitle">{{.PageParams.summary}}</p>
+    {{block "pageHeading" .}}{{end}}
     
     {{if .PageParams.pronouns}}
         <p>Pronouns: {{.PageParams.pronouns}}</p>
     {{end}}
-    <p>|
+    <p class="socials">|
     {{range $social := .PageParams.socials}}
         <a href="{{$social.link}}" {{if eq $social.name "mastodon"}}rel="me"{{end}}>{{$social.name}}</a> |
     {{end}}
     </p>
 
-    {{ .Body }}
+    {{template "mainText" .}}
 
 {{end}}

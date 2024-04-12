@@ -13,12 +13,13 @@ navbarName: Bookshelf
 
 | Progress | Book | Author |
 |:---:|:---:|:---:|
-26% | *The Lesser Devil* | Christopher Ruocchio
+26% | *Howling Dark* | Christopher Ruocchio
 
 ### On Hold at the Moment
 
 | Progress | Book | Author |
 |:---:|:---:|:---:|
+27% | *Red Rising* | Pierce Brown
 <!-- 5% | *Hadji Murat* | Leo Tolstoy -->
 <!-- 5% | *Born in Tibet* | Chogyam Trungpa -->
 
@@ -30,6 +31,7 @@ navbarName: Bookshelf
 
 |Rating | Book | Author|
 |:---:|:---:|:---:|
+⭐️ ⭐️ ⭐️ ⭐️ ⭐️ | *The Lesser Devil* | Christopher Ruocchio
 🌟 🌟 🌟 🌟 🌟 | *Empire of Silence* | Christopher Ruocchio
 ⭐️ ⭐️ ⭐️ ⭐️ ⭐️ | *A Desolation Called Peace* | Arkady Martine
 ⭐️ ⭐️ ⭐️ ⭐️ ⭐️ | *Bookshops & Bonedust* | Travis Baldree
@@ -94,11 +96,11 @@ navbarName: Bookshelf
 ⭐ ⭐ ⭐ ⭐ ⭐ | *Those Who Are Loved*| Victoria Hislop
 ⭐ ⭐ ⭐ ⭐ | *At Night All Blood is Black*| David Diop
 🌟 🌟 🌟 🌟 🌟 | *The Name of the Rose*| Umberto Eco
-⭐ ⭐ ⭐ ⭐ | [*Ariadne*](bookshelf/ariadne.md) | Jennifer Saint
-⭐ ⭐ ⭐ ⭐ ⭐ | [*The Beekeeper of Aleppo*](bookshelf/the-beekeeper-of-aleppo.md) | Christy Lefteri
-🌟 🌟 🌟 🌟 🌟 | [*The Island of Missing Trees*](bookshelf/the-island-of-missing-trees.md) | Elif Shafak
-🌟 🌟 🌟 🌟 🌟 | [*Circe*](bookshelf/circe.md) | Madeline Miller
-⭐ ⭐ ⭐ ⭐ ⭐ | [*A Long Petal of the Sea*](bookshelf/a-long-petal-of-the-sea.md) | Isabel Allende
+⭐ ⭐ ⭐ ⭐ | [*Ariadne*](books/ariadne/) | Jennifer Saint
+⭐ ⭐ ⭐ ⭐ ⭐ | [*The Beekeeper of Aleppo*](books/the-beekeeper-of-aleppo/) | Christy Lefteri
+🌟 🌟 🌟 🌟 🌟 | [*The Island of Missing Trees*](books/the-island-of-missing-trees/) | Elif Shafak
+🌟 🌟 🌟 🌟 🌟 | [*Circe*](books/circe/) | Madeline Miller
+⭐ ⭐ ⭐ ⭐ ⭐ | [*A Long Petal of the Sea*](books/a-long-petal-of-the-sea/) | Isabel Allende
 ⭐ ⭐ ⭐ | *The Alchemist* | Paulo Coelho
 
 #### 2021
@@ -119,8 +121,8 @@ navbarName: Bookshelf
 
 |Rating | Book | Author|
 |:---:|:---:|:---:|
-⭐ ⭐ | [*Mountains Beyond Mountains*](bookshelf/mountains-beyond-mountains.md) | Tracy Kidder
-⭐ ⭐ ⭐ ⭐ | [*Spillover*](bookshelf/spillover.md) | David Quammen
+⭐ ⭐ | [*Mountains Beyond Mountains*](books/mountains-beyond-mountains/) | Tracy Kidder
+⭐ ⭐ ⭐ ⭐ | [*Spillover*](books/spillover/) | David Quammen
 ⭐ ⭐ ⭐ ⭐ ⭐ | *Silk Roads* | Peter Frankopan
 ⭐ ⭐ ⭐ ⭐ | *The Fever* | Sonia Shah
 ⭐ ⭐ ⭐ ⭐ | *The Code Breaker* | Walter Isaacson
