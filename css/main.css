@@ -1,10 +1,9 @@
 @charset "UTF-8";
 
-@import url('https://fonts.googleapis.com/css2?family=Alice&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Work+Sans:ital,wght@0,100..900;1,100..900&display=swap');
+@import url("../fonts/bitter-stylesheet.css");
+@import url("../fonts/cambo-stylesheet.css");
 
-@import url("../fonts/stylesheet.css");
-
+@import url('https://fonts.googleapis.com/css2?family=Hanken+Grotesk:ital,wght@0,100..900;1,100..900&display=swap');
 
 :root {
     --main-text-color: #333;
@@ -12,6 +11,7 @@
     --danger-color: red;
     --hr-border-color: #ccc;
     --code-color: #4490E3;
+    --drop-cap-color: #4490E3;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -19,6 +19,7 @@
         --main-text-color: #f7f7f7;
         --background-color: #3b3b3b;
         --code-color: #44E3D0;
+        --drop-cap-color: #44E3D0;
     }
 }
 
@@ -71,7 +72,8 @@ body {
 
     margin-left: auto;
     margin-right: auto;
-    font-family: "Scaly Sans", "Work Sans", "Roboto", Arial, sans-serif;
+    font-family: "Hanken Grotesk", "Scaly Sans", "Work Sans", "Roboto", Arial, sans-serif;
+    font-weight: 300;
     background-color: var(--background-color);
     color: var(--main-text-color);
     counter-reset: sidenote-counter;
@@ -159,6 +161,17 @@ p {
     margin-bottom: 1.4rem;
     padding-right: 0;
     vertical-align: baseline;
+}
+
+section > p:not(.subtitle):not(.socials)::first-letter {
+    color: var(--drop-cap-color);
+    float: left;
+    font-family: Cambo;
+    font-size: 3rem;
+    line-height: 3rem;
+    padding-top: 4px;
+    padding-right: 8px;
+    padding-left: 3px;
 }
 
 /* Chapter Epigraphs */
