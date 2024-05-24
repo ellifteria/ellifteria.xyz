@@ -1,5 +1,10 @@
 {{define "pageHeading"}}
     <h1>{{.PageParams.title}}</h1>
+    {{if .PageParams.series.name}}
+    <p>
+        Series: <a href="{{.PageParams.series.link}}">{{.PageParams.series.name}}</a>
+    </p>
+    {{end}}
     {{block "pathToPage" .}}{{end}}
     {{if .PageParams.summary}}<p class="subtitle">{{.PageParams.summary}}</p>{{end}}
 {{end}}

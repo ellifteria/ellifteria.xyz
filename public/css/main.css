@@ -11,7 +11,7 @@
     --background-color: #f7f7f7;
     --danger-color: red;
     --hr-border-color: #ccc;
-    --code-color: #4490E3;;
+    --code-color: #318CE7;;
     --drop-cap-color: #4b2e83;
 }
 
@@ -19,7 +19,7 @@
     :root {
         --main-text-color: #f7f7f7;
         --background-color: #3b3b3b;
-        --code-color: #c5b4e3;
+        --code-color: #00BFFF;
         --drop-cap-color: #c5b4e3;
     }
 }
@@ -378,6 +378,10 @@ pre > code {
     margin-left: 2.5%;
     overflow-x: auto;
     display: block;
+}
+
+pre:has(> code) {
+    white-space: pre-wrap;
 }
 
 pre.fullwidth > code {

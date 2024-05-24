@@ -1,0 +1,41 @@
+{{template "base" .}}
+
+{{define "header"}}
+    <title>{{.SiteParams.name}} | {{.PageParams.title}}</title>
+{{end}}
+
+{{define "postLinks"}}
+    {{range $section := .PageParams.postSections}}
+    <h2 id="{{$section.name}}">{{$section.name}}</h2>
+    {{range $post := $section.posts}}
+    <p>
+        <a href="{{$post.link}}"><strong>{{$post.name}}</strong></a>
+        {{if $post.date}}
+        | <em>{{$post.date}}</em>
+        {{end}}
+        {{if $post.series.name}}
+        | Series: <a href="{{$post.series.link}}">{{$post.series.name}}</a>
+        {{end}}
+        {{if $post.summary}}
+        <br>
+        {{$post.summary}}
+        {{end}}
+    </p>
+    {{end}}
+    {{end}}
+{{end}}
+
+{{define "content"}}
+
+    {{block "pageHeading" .}}{{end}}
+
+    {{if $.PageParams.postssBeforeContent}}
+        {{template "postLinks" .}}
+        <hr>
+        {{template "mainText" .}}
+    {{else}}
+        {{template "mainText" .}}
+        {{template "postLinks" .}}
+    {{end}}
+
+{{end}}

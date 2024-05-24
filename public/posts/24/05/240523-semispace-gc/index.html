@@ -1,0 +1,464 @@
+
+<!DOCTYPE html>
+<html>
+
+    <head>
+
+        <meta charset="UTF-8">
+        <link rel="stylesheet" href="/css/main.css">
+
+        
+    <title>ellifteria.xyz | Semi-Space Garbage Collection</title>
+
+
+        
+
+<script>
+    if (typeof main === "undefined"){
+        var main = function() {};
+    }
+</script>
+
+
+
+        
+
+<link rel="apple-touch-icon-precomposed" sizes="57x57" href="apple-touch-icon-57x57.png" />
+<link rel="apple-touch-icon-precomposed" sizes="114x114" href="apple-touch-icon-114x114.png" />
+<link rel="apple-touch-icon-precomposed" sizes="72x72" href="apple-touch-icon-72x72.png" />
+<link rel="apple-touch-icon-precomposed" sizes="144x144" href="apple-touch-icon-144x144.png" />
+<link rel="apple-touch-icon-precomposed" sizes="60x60" href="apple-touch-icon-60x60.png" />
+<link rel="apple-touch-icon-precomposed" sizes="120x120" href="apple-touch-icon-120x120.png" />
+<link rel="apple-touch-icon-precomposed" sizes="76x76" href="apple-touch-icon-76x76.png" />
+<link rel="apple-touch-icon-precomposed" sizes="152x152" href="apple-touch-icon-152x152.png" />
+<link rel="icon" type="image/png" href="favicon-196x196.png" sizes="196x196" />
+<link rel="icon" type="image/png" href="favicon-96x96.png" sizes="96x96" />
+<link rel="icon" type="image/png" href="favicon-32x32.png" sizes="32x32" />
+<link rel="icon" type="image/png" href="favicon-16x16.png" sizes="16x16" />
+<link rel="icon" type="image/png" href="favicon-128.png" sizes="128x128" />
+<meta name="application-name" content="&nbsp;"/>
+<meta name="msapplication-TileColor" content="#FFFFFF" />
+<meta name="msapplication-TileImage" content="mstile-144x144.png" />
+<meta name="msapplication-square70x70logo" content="mstile-70x70.png" />
+<meta name="msapplication-square150x150logo" content="mstile-150x150.png" />
+<meta name="msapplication-wide310x150logo" content="mstile-310x150.png" />
+<meta name="msapplication-square310x310logo" content="mstile-310x310.png" />
+
+
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/color-brewer.min.css">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+        <script src="https://cdn.jsdelivr.net/npm/highlightjs-line-numbers.js/dist/highlightjs-line-numbers.min.js"></script>
+
+    
+    
+
+        <script>hljs.highlightAll(); hljs.initLineNumbersOnLoad({singleLine: true});</script>
+
+        <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+        <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+        <style>
+
+
+		td.hljs-ln-numbers {
+			text-align: center;
+			color: #ccc;
+			border-right: 1px solid #999;
+			vertical-align: top;
+			padding-right: 5px;
+
+			-webkit-touch-callout: none;
+			-webkit-user-select: none;
+			-khtml-user-select: none;
+			-moz-user-select: none;
+			-ms-user-select: none;
+			user-select: none;
+		}
+		td.hljs-ln-code {
+			padding-left: 10px;
+		}
+
+		code {
+			white-space: pre-wrap;
+			overflow: auto;
+		}
+	
+        </style>
+    </head>
+
+    <body onload="main()">
+        <header>
+            
+
+<div class="column">
+    <div class="navigation">
+        |
+        
+            
+                <a href="/">Home</a> |
+            
+        
+            
+                <a href="/tiwo">TIWO</a> |
+            
+        
+            
+                <a href="/bookshelf">Bookshelf</a> |
+            
+        
+    </div>
+    <div class="breadcrumb">
+        <a href="/">ellifteria.xyz</a>
+    </div>
+</div>
+
+
+        </header>
+        
+        <article>
+            <section>
+                
+
+    
+    <h1>Semi-Space Garbage Collection</h1>
+    
+    <p>
+        Series: <a href="/posts/series/gc">Garbage Collection</a>
+    </p>
+    
+    
+    
+        <div class="pathToPage">
+            <p>
+                <a href="/">~</a>
+                
+                    /
+                    <strong>
+                        
+                        <a href="/posts" >Posts</a>
+                        
+                    </strong>
+                
+                    /
+                    <strong>
+                        
+                        <a href="/posts/24/05/240523-semispace-gc" class="self">Semi-Space Garbage Collection</a>
+                        
+                    </strong>
+                
+            </p>
+        </div>
+    
+
+    <p class="subtitle">A Deep Dive into Implementing a Two-Space Copying Garbage Collector</p>
+
+
+    
+
+<h3 id="what-is-semi-space-garbage-collection">What is Semi-Space Garbage Collection?</h3>
+<p>Two space copying garbage collection is a stop and copy method of tracing garbage collection.
+This means that, in two space copying garbage collection, the garbage collector traces which objects are being used by a program by building a chain of referenced objects from some initial objects, called roots, and stops program execution to copy all memory still in use while discarding unused objects.
+As a concrete example, suppose at some time, the following is stored by a program in memory and suppose that our roots are addresses <code>0</code>, <code>5</code>, and <code>7</code>.:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">Address</th>
+<th style="text-align:center">Value</th>
+<th style="text-align:center">Type</th>
+<th style="text-align:center">Root?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><code>0</code></td>
+<td style="text-align:center"><code>1</code></td>
+<td style="text-align:center">Pointer</td>
+<td style="text-align:center">Yes</td>
+</tr>
+<tr>
+<td style="text-align:center"><code>1</code></td>
+<td style="text-align:center"><code>9</code></td>
+<td style="text-align:center">Int</td>
+<td style="text-align:center">No</td>
+</tr>
+<tr>
+<td style="text-align:center"><code>2</code></td>
+<td style="text-align:center"><code>40</code></td>
+<td style="text-align:center">Int</td>
+<td style="text-align:center">No</td>
+</tr>
+<tr>
+<td style="text-align:center"><code>3</code></td>
+<td style="text-align:center"><code>A</code></td>
+<td style="text-align:center">Char</td>
+<td style="text-align:center">No</td>
+</tr>
+<tr>
+<td style="text-align:center"><code>4</code></td>
+<td style="text-align:center"><code>3</code></td>
+<td style="text-align:center">Pointer</td>
+<td style="text-align:center">No</td>
+</tr>
+<tr>
+<td style="text-align:center"><code>5</code></td>
+<td style="text-align:center"><code>6</code></td>
+<td style="text-align:center">Pointer</td>
+<td style="text-align:center">Yes</td>
+</tr>
+<tr>
+<td style="text-align:center"><code>6</code></td>
+<td style="text-align:center"><code>2</code></td>
+<td style="text-align:center">Pointer</td>
+<td style="text-align:center">No</td>
+</tr>
+<tr>
+<td style="text-align:center"><code>7</code></td>
+<td style="text-align:center"><code>1</code></td>
+<td style="text-align:center">Int</td>
+<td style="text-align:center">Yes</td>
+</tr>
+</tbody>
+</table>
+<p>Since <code>0</code>, <code>5</code>, and <code>7</code> are roots, they all are still alive—i.e., they are still being used.
+Therefore, our garbage collector needs to copy these values.
+The values at <code>0</code> and <code>5</code> are pointers; since they are alive, the objects they point to are also still alive.
+So, addresses <code>1</code> and <code>6</code> need to be copied also.
+Since the value at <code>6</code> is again a pointer, what it points to ALSO needs to be copied.
+In the end, this means that memory at addresses <code>0</code>, <code>1</code>, <code>2</code>, <code>5</code>, and <code>7</code> all needs to be alive after garbage collection.
+To find these memory addresses that need to be kept, a tracing garbage collector would build a chain of references starting form the roots just like this.
+A stop and copy garbage collector would let the program execute until running out of memory, then stop execution, trace reference from the roots to find all alive memory, copy the alive memory, and discard all un-copied memory.
+Two space copying collection is one method of doing so.</p>
+<p>To do this, a two space copying garbage collector splits the heap up into two equal parts: a From Space and a To Space.
+During normal program execution, the garbage collector allocates memory into the From Space only—nothing is allocated into the To Space.
+This means that only the From Space can be used for allocating memory and that the heap fills up when the From Space is full.</p>
+<p>When this happens, the garbage collector beings collecting garbage.
+Tracing references through the From Space from the roots, the collector moves all alive memory into the To Space, leaving only garbage left in the From Space.
+Then, the collector empties everything in the From Space.
+The old From Space (which is not empty) becomes the new To Space and the old To Space (which has all alive objects) becomes the new From Space.
+Then, program execution continues.</p>
+<h2 id="what-are-some-of-the-benefits-of-two-space-copying-garbage-collection">What are Some of the Benefits of Two Space Copying Garbage Collection</h2>
+<ol>
+<li>No memory fragmentation</li>
+<li>Collection time is proportional to the amount of live data (i.e., data that is not garbage)</li>
+<li>Allocation only requires incrementing a pointer</li>
+<li>Collection does not require much state</li>
+</ol>
+<h2 id="what-are-some-of-the-drawbacks-to-two-space-copying-garbage-collection">What are Some of the Drawbacks to Two Space Copying Garbage Collection</h2>
+<ol>
+<li>Only half of the heap is able to be used for storing objects since the other half is needed for collection</li>
+<li>Requires the entire program to stop executing to collect garbage</li>
+</ol>
+<h2 id="how-does-two-space-copying-garbage-collection-work">How Does Two Space Copying Garbage Collection Work</h2>
+<p>Writing <strong>THE ALGORITHM</strong></p>
+<h3 id="general-steps">General steps</h3>
+<ol>
+<li>Copy all program <code>root</code>s from the From Space into the beginning of the To Space leaving <code>forwarding pointer</code>s in the <code>root</code>s' places in the From Space</li>
+<li>Iterate through To Space, copying all objects in the From Space referenced by objects in the To Space into the To Space, leaving <code>forwarding pointer</code>s in their places in the From Space</li>
+</ol>
+<pre><code class="language-js">class TwoSpaceCopyingCollector extends Collector {
+    constructor(size) {
+        super();
+
+        if (!isInteger(size) || size &lt;= 6) {
+            console.error(`new Collector: illegal size: ${size}`);
+            return null;
+        }
+
+        this.size = size
+        this.heap = new Heap(this.size);
+        let fromPointer = 4;
+        let toPointer = integerDivision(size - 4, 2) + 4;
+        this.heap.heapFill(0, this.size, &quot;free&quot;);
+        this.heap.heapSet(0, fromPointer);
+        this.heap.heapSet(1, toPointer);
+        this.heap.heapSet(2, fromPointer);
+        this.heap.heapSet(3, toPointer);
+
+    }
+    
+    copyFrom(pointer) {
+        let freePointer = this.heap.heapGet(3);
+        switch(this.heap.heapGet(pointer)) {
+            case &quot;forward&quot;:
+                return this.heap.heapGet(pointer + 1);
+            case &quot;flat&quot;:
+                this.heap.heapSet(freePointer, &quot;flat&quot;);
+                this.heap.heapSet(freePointer + 1, this.heap.heapGet(pointer + 1));
+                this.heap.heapSet(pointer, &quot;forward&quot;);
+                this.heap.heapSet(pointer + 1, freePointer);
+                this.heap.heapSet(3, freePointer + 2);
+                break;
+            case &quot;cons&quot;:
+                this.heap.heapSet(freePointer, &quot;cons&quot;);
+                this.heap.heapSet(freePointer + 1, this.heap.heapGet(pointer + 1));
+                this.heap.heapSet(freePointer + 2, this.heap.heapGet(pointer + 2));
+                this.heap.heapSet(pointer, &quot;forward&quot;);
+                this.heap.heapSet(pointer + 1, freePointer);
+                this.heap.heapSet(3, freePointer + 3);
+                break;
+            default:
+                console.error(`Collector.copyFrom: unknown tag: ${this.heap.heapGet(pointer)}`);
+                return null;
+        }
+        return freePointer;
+    };
+    
+    collectGarbageStep() {
+        let scanPointer = this.heap.heapGet(2);
+        let tag = this.heap.heapGet(scanPointer);
+        switch(tag) {
+            case &quot;flat&quot;:
+                this.heap.heapSet(2, scanPointer + 2);
+                break;
+            case &quot;cons&quot;:
+                this.heap.heapSet(scanPointer + 1, this.copyFrom(this.heap.heapGet(scanPointer + 1)));
+                this.heap.heapSet(scanPointer + 2, this.copyFrom(this.heap.heapGet(scanPointer + 2)));
+                this.heap.heapSet(2, scanPointer + 3);
+                break;
+            default:
+                console.error(`Collector.collectGarbage: unknown tag: ${tag}`);
+                return null;
+        }
+    }
+    
+    collectGarbage(root1, root2) {
+        this.heap.heapSet(2, this.heap.heapGet(1));
+        this.heap.heapSet(3, this.heap.heapGet(1));
+        
+        let newRoot1 = false;
+        let newRoot2 = false;
+        
+        if (root1 != false) {
+            newRoot1 = this.copyFrom(root1);
+            this.moveRoot(root1, newRoot1);
+        }
+        if (root2 != false) {
+            newRoot2 = this.copyFrom(root2);
+            this.moveRoot(root2, newRoot2);
+        }
+
+        let currentRoots = this.roots.values().toArray();
+        for (const root of currentRoots) {
+            let newRoot = this.copyFrom(root);
+            this.moveRoot(root, newRoot);
+        }
+        
+        while (this.heap.heapGet(2) &lt; this.heap.heapGet(3)) {
+            this.collectGarbageStep();
+        }
+
+        this.cleanUpCollection();
+        
+        return [newRoot1, newRoot2];
+    };
+    
+    cleanUpCollection() {
+        let oldFromPointer = this.heap.heapGet(0);
+        let oldToPointer = this.heap.heapGet(1);
+        
+        let endOfMemory = integerDivision(this.size - 4, 2) + oldFromPointer;
+        this.heap.heapFill(oldFromPointer, endOfMemory, &quot;free&quot;);
+        
+        this.heap.heapSet(0, oldToPointer);
+        this.heap.heapSet(1, oldFromPointer);
+        
+        if (oldToPointer &gt;= oldFromPointer) {
+            this.heap.heapSet(3, this.size);
+        } else {
+            this.heap.heapSet(3, oldFromPointer);
+        }
+    };
+    
+    spaceExists(amount) {
+        return this.heap.heapGet(3) &gt;= (this.heap.heapGet(2) + amount);
+    }
+    
+    allocate(data, asRoot = false) {
+        let allocationPointer = this.heap.heapGet(2);
+        
+        switch (data.tag) {
+            case &quot;flat&quot;:
+                if (this.spaceExists(2)) {
+                    this.heap.heapSet(allocationPointer, &quot;flat&quot;);
+                    this.heap.heapSet(allocationPointer + 1, data.value);
+                    this.heap.heapSet(2, allocationPointer + 2);
+                    if (asRoot) {
+                        this.addRoot(allocationPointer);
+                    }
+                } else {
+                    this.collectGarbage(false, false);
+                    if (this.spaceExists(2)) {
+                        allocationPointer = this.heap.heapGet(2);
+                        this.heap.heapSet(allocationPointer, &quot;flat&quot;);
+                        this.heap.heapSet(allocationPointer + 1, data.value);
+                        this.heap.heapSet(2, allocationPointer + 2);
+                        if (asRoot) {
+                            this.addRoot(allocationPointer);
+                        }
+                    } else {
+                        console.error(`Collector.allocate: out of memory in allocating: (flat ${data.value})`);
+                        return null;
+                    }
+                }
+                break;
+            case &quot;cons&quot;:
+                if (this.spaceExists(3)) {
+                    this.heap.heapSet(allocationPointer, &quot;cons&quot;);
+                    this.heap.heapSet(allocationPointer + 1, data.root1);
+                    this.heap.heapSet(allocationPointer + 2, data.root2);
+                    this.heap.heapSet(2, allocationPointer + 3);
+                    if (asRoot) {
+                        this.addRoot(allocationPointer);
+                    }
+                } else {
+                    let [newRoot1, newRoot2] = this.collectGarbage(data.root1, data.root2);
+                    if (this.spaceExists(3)) {
+                        allocationPointer = this.heap.heapGet(2);
+                        this.heap.heapSet(allocationPointer, &quot;cons&quot;);
+                        this.heap.heapSet(allocationPointer + 1, newRoot1);
+                        this.heap.heapSet(allocationPointer + 1, newRoot2);
+                        this.heap.heapSet(2, allocationPointer + 3);
+                        if (asRoot) {
+                            this.addRoot(allocationPointer);
+                        }
+                    } else {
+                        console.error(`Collector.allocate: out of memory in allocating: (cons ${data.root1} ${data.root2})`);
+                        return null;
+                    }
+                }
+                break;
+            default:
+                console.error(`Collector.allocate: unknown tag: ${tag}`);
+                return null;
+        }
+
+        return allocationPointer;
+    };
+}
+</code></pre>
+
+
+
+
+
+            </section>
+        </article>
+
+        <footer>
+            
+
+    <div>Powered by
+        <a href="https://golang.org/">Go</a> and
+        <a href="https://github.com/ellifteria/grafe">graf&emacr;</a>
+    </div>
+
+
+        </footer>
+    </body>
+
+</html>
+
+
+
+

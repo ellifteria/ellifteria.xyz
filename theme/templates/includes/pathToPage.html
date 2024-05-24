@@ -5,7 +5,13 @@
                 <a href="/">~</a>
                 {{range $page := .PageParams.path}}
                     /
-                    <a href="{{$page.link}}" {{if $page.self}}class="self"{{end}}><strong>{{$page.name}}</strong></a>
+                    <strong>
+                        {{if $page.link}}
+                        <a href="{{$page.link}}" {{if $page.self}}class="self"{{end}}>{{$page.name}}</a>
+                        {{else}}
+                        {{$page.name}}
+                        {{end}}
+                    </strong>
                 {{end}}
             </p>
         </div>
