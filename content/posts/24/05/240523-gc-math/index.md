@@ -85,3 +85,36 @@ One of which, $\Sigma$, becomes the allocated memory accessible to the program a
 Furthermore, $\Sigma'$ is defined such that no memory reachable from (1) the current expression being evaluated and its environment, (2) the continuation to which the program returns, and (3) any of the roots of the program's memory is in the discarded portion, $\Sigma'$.
 
 In other words, garbage collection is defined as a function that discards only memory that is not reachable from the program's current state.
+
+Does this tell us very much?
+On its own, not really.
+It's a mathematical restatement of something we already knew: garbage collection cannot discard any live memory still being used by the program.
+
+This definition also doesn't tell us what garbage collection *should* do, only what it *must* do.
+Garbage collection *must* not discard any live memory.
+But what memory *should* it discard?
+Does the formula tell us?
+Suppose that $\Sigma'=\emptyset$.
+By definition, the intersection of the empty set with anything else is the empty set.
+So, if $\Sigma'=\emptyset$, the definition of garbage collection is still satisfied.
+However, this means that we discarded no memory; the memory accessible to the program after garbage collection is the same as the memory accessible to the program before garbage collection.
+A garbage collector that doesn't collect any garbage ever is not a terribly useful garbage collector.
+
+Furthermore, the definition doesn't tell us *how* we should be collecting garbage either.
+All it states is "garbage collection is a function that only changes the memory accessible to a program and discards only un-alive memory that is not accessible from the current state of the program."
+
+So then, why would we model garbage collection like this?
+Just to make mathematicians happy?
+Well, there actually is a very good reason if we go a step further and mathematically model *how* we collect garbage.
+
+Let's say we mathematically model all of the steps we take to collect garbage.
+In other words, we provide mathematical functions that map how we partition $\Sigma^+$ into $\Sigma$ and $\Sigma'$.
+By doing so, we would be able to write a mathematical proof that shows that by applying those functions until $\Sigma^+$ is fully partitioned, we meet the definition of garbage collection.
+Put another way, we can prove that the steps that define how to collect garbage satisfy the requirement that only un-alive memory is discarded.
+
+### Too Many Words, Not Enough Math
+
+Let's give an actual example of this.
+Here, we'll use a very simple garbage collection algorithm: Mark and Sweep.
+How does mark and sweep work?
+It marks all the memory that needs to be kept and sweeps the rest away.
