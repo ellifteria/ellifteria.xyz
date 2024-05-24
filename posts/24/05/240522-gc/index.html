@@ -8,7 +8,7 @@
         <link rel="stylesheet" href="/css/main.css">
 
         
-    <title>ellifteria.xyz | Notes</title>
+    <title>ellifteria.xyz | Garbage Collection, Broadly</title>
 
 
         
@@ -121,7 +121,11 @@
                 
 
     
-    <h1>Notes</h1>
+    <h1>Garbage Collection, Broadly</h1>
+    
+    <p>
+        Series: <a href="/posts/series/gc">Garbage Collection</a>
+    </p>
     
     
     
@@ -132,7 +136,14 @@
                     /
                     <strong>
                         
-                        <a href="/Notes" class="self">Notes</a>
+                        <a href="/posts" >Posts</a>
+                        
+                    </strong>
+                
+                    /
+                    <strong>
+                        
+                        <a href="/posts/24/05/240522-gc" class="self">Garbage Collection</a>
                         
                     </strong>
                 
@@ -140,37 +151,64 @@
         </div>
     
 
-    <p class="subtitle">A Collection of Notes on Various Topics</p>
+    <p class="subtitle">Basic Introduction to Garbage Collection</p>
 
 
     
-        
+
+<p>When choosing a programming language to use for a project—or when implementing one—there are many considerations to keep in mind.
+One of those is whether or not the programming language uses any sort of garbage collection<label for="sidenote--sn1" class="margin-toggle sidenote-number"></label><input type="checkbox" id="sidenote--sn1" class="margin-toggle"/><span class="sidenote">
+Technically, whether or not a language uses garbage collection is more a question for the run system, not the language itself. The same language could theoretically compile to one target that does not use garbage collection and also be interpreted by an interpreter that does perform garbage collection. In practice, this is not common.
+</span>.
+For many programmers, whether or not a language uses garbage collection is not at the top of their mind when choosing a language to use.
+However, for some projects, this is a critical consideration.
+So, what is garbage collection?
+Where is it used?
+Why is it used?
+And can we implement it ourselves?</p>
+<h2 id="what-is-garbage-collection">What is Garbage Collection?</h2>
+<p>Very broadly, garbage collection is the process by which a run system of a programming language automatically frees memory no longer being used by the program.
+Therefore, garbage collection is a form of automatic memory management.
+This is in contrast to manual memory management<label for="sidenote--sn2" class="margin-toggle sidenote-number"></label><input type="checkbox" id="sidenote--sn2" class="margin-toggle"/><span class="sidenote">
+How do you know if your programming language requires manual memory management or if memory is managed automatically? If you're asking this question, memory is being managed automatically. Or you're writing some very bad C code.
+</span></p>
+<h3 id="what-languages-use-garbage-collection">What Languages Use Garbage Collection?</h3>
+<p>Garbage collection is much more common in scripting languages.</p>
+<ul>
+<li>Python</li>
+<li>JavaScript</li>
+<li>Go</li>
+<li>C#</li>
+</ul>
+<h3 id="what-languages-do-not-use-garbage-collection">What Languages Do NOT Use Garbage Collection?</h3>
+<p>Scripting languages tend to use not use garbage collection and instead rely on manually manipulating and cleaning up memory.</p>
+<ul>
+<li>C</li>
+<li>C++</li>
+<li>Rust</li>
+</ul>
+<h2 id="why-do-some-languages-use-garbage-collection">Why Do Some Languages Use Garbage Collection</h2>
+<ol>
+<li>Simplifies scripting for the end programmer</li>
+<li>Does not require programmers to manually de-allocate memory</li>
+</ol>
+<h2 id="why-do-some-languages-not-use-garbage-collection">Why Do Some Languages NOT Use Garbage Collection</h2>
+<ol>
+<li>Performance hit</li>
+<li>Can stall program execution</li>
+<li>Can have substantial overhead</li>
+</ol>
+<h2 id="how-does-garbage-collection-work-very-broadly">How Does Garbage Collection Work (Very Broadly)</h2>
+<p>Run system checks when objects are no longer able to be used by a program and automatically frees up the memory used.</p>
+<h2 id="strategies-for-garbage-collection">Strategies for Garbage Collection</h2>
+<ul>
+<li>Tracing</li>
+<li>Reference counting</li>
+<li>Stop and copy</li>
+</ul>
 
 
 
-
-        
-    
-        <p>
-        <a href="2024/nu/esterel/"><strong>Esterel</strong></a>
-        
-        
-            <br>
-            Esterel in Racket: Synchronous Reactive Programming
-        
-        </p>
-    
-        <p>
-        <a href="2024/nu/gc/"><strong>GC</strong></a>
-        
-        
-            <br>
-            Garbage Collection
-        
-        </p>
-    
-
-    
 
 
             </section>
@@ -189,8 +227,6 @@
     </body>
 
 </html>
-
-
 
 
 
