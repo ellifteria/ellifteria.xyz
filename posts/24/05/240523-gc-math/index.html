@@ -197,15 +197,15 @@ Given a state:</p>
 <p><span class="math display">\[\left\langle c, \kappa, \Sigma \oplus \Sigma' \right\rangle \mapsto \left\langle c, \kappa, \Sigma \right\rangle
 \]</span></p>
 <p>Such that:</p>
-<p><span class="math display">\[dom\left(\Sigma'\right) \cap \left(\left(\bigcup_{v \in roots\left(\Sigma\right)} L\left(v\right)\right) \cup L\left(c\right) \cup L\left(\kappa\right)\right) = \emptyset
+<p><span class="math display">\[\Sigma' \cap \left(L\left(c\right) \cup L\left(\kappa\right)\right) = \emptyset
 \]</span></p>
-<p>Where <span class="math inline">\(L\left(x\right)\)</span> refers to the live memory reachable from <span class="math inline">\(x\)</span>, <span class="math inline">\(dom\left(x\right)\)</span> refers to the domain of <span class="math inline">\(x\)</span>, and <span class="math inline">\(roots\left(x\right)\)</span> refers to the roots of the memory <span class="math inline">\(x\)</span>.</p>
+<p>Where <span class="math inline">\(L\left(x\right)\)</span> refers to the live memory reachable from <span class="math inline">\(x\)</span>.</p>
 <p>Now, that looks intimidating.
 However, I promise it's not as bad as it seems.
 So, what does this mean?</p>
 <p>The key idea is that garbage collection is a function that partitions the memory allocated by the program before garbage collection, <span class="math inline">\(\Sigma^+\)</span>, into two mutually exclusive portions.
 One of which, <span class="math inline">\(\Sigma\)</span>, becomes the allocated memory accessible to the program after garbage collection and the other, <span class="math inline">\(\Sigma'\)</span>, is discarded.
-Furthermore, <span class="math inline">\(\Sigma'\)</span> is defined such that no memory reachable from (1) the current expression being evaluated and its environment, (2) the continuation to which the program returns, and (3) any of the roots of the program's memory is in the discarded portion, <span class="math inline">\(\Sigma'\)</span>.</p>
+Furthermore, <span class="math inline">\(\Sigma'\)</span> is defined such that no memory reachable from (1) the current expression being evaluated and its environment and (2) the continuation to which the program returns.</p>
 <p>In other words, garbage collection is defined as a function that discards only memory that is not reachable from the program's current state.</p>
 <p>Does this tell us very much?
 On its own, not really.
@@ -233,6 +233,36 @@ Put another way, we can prove that the steps that define how to collect garbage 
 Here, we'll use a very simple garbage collection algorithm: Mark and Sweep.
 How does mark and sweep work?
 It marks all the memory that needs to be kept and sweeps the rest away.</p>
+<p>That's very abstract so let's break it down further.
+The steps of mark and sweep garbage collection are:</p>
+<ol>
+<li>Color all memory white</li>
+<li>Color all memory immediately reachable from the current state (all the roots) grey</li>
+<li>Pick a grey memory object</li>
+<li>Color all memory reachable by that grey object</li>
+<li>Color that grey object black</li>
+<li>Repeat steps 3. through 5. until there are no grey objects</li>
+</ol>
+<p>Now, I promised math, so let's do some math.
+We can represent garbage collection as a state machine:</p>
+<p><span class="math display">\[\left\langle G, B, \Sigma \right\rangle
+\]</span></p>
+<p>Note that since all allocated memory will either be grey, black, or white, the white memory is the memory that is not grey or black: <span class="math inline">\(W = \Sigma \setminus \left(G \cup B \right)\)</span>.</p>
+<p>We can represent step 1 as:</p>
+<p><span class="math display">\[\left\langle \emptyset, \emptyset, \Sigma \right\rangle
+\]</span></p>
+<p>All memory is marked as white.
+For our initial marking (step 2):</p>
+<p><span class="math display">\[\left\langle L\left(c \right) \cup L\left(\kappa \right) \right\rangle
+\]</span></p>
+<p>Steps 3. through 5. can be represented with a single function mapping:</p>
+<p><span class="math display">\[\left\langle G, B, \Sigma \right\rangle \mapsto {\left\langle\left(G \cup L\left(\sigma\right)\right)\setminus\left(B \cup \left\{\sigma\right\}\right), B \cup \left\{\sigma\right\}, \Sigma\right\rangle}_{\sigma \in G}
+\]</span></p>
+<p>A grey object (<span class="math inline">\(\sigma \in G\)</span>) is chosen, all memory reachable from the object this is not marked black is colored grey (<span class="math inline">\(G \mapsto \left(G \cup L\left(\sigma\right)\right)\setminus\left(B \cup \left\{\sigma\right\}\right)\)</span>), and then the object is colored black (<span class="math inline">\(B \mapsto B \cup \left\{\sigma\right\}\)</span>).</p>
+<p>Eventually, all grey elements will be colored white or black:</p>
+<p><span class="math display">\[\left\langle \emptyset , B, \Sigma \right\rangle
+\]</span></p>
+<p>And just like that, we have a mathematical model of garbage collection!</p>
 
 
 

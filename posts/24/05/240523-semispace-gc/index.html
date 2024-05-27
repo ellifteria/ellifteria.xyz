@@ -235,7 +235,7 @@ This means that only the From Space can be used for allocating memory and that t
 <p>When this happens, the garbage collector beings collecting garbage.
 Tracing references through the From Space from the roots, the collector moves all alive memory into the To Space, leaving only garbage left in the From Space.
 Then, the collector empties everything in the From Space.
-The old From Space (which is not empty) becomes the new To Space and the old To Space (which has all alive objects) becomes the new From Space.
+The old From Space (which is now empty) becomes the new To Space and the old To Space (which has all alive objects) becomes the new From Space.
 Then, program execution continues.</p>
 <h2 id="what-are-some-of-the-benefits-of-two-space-copying-garbage-collection">What are Some of the Benefits of Two Space Copying Garbage Collection</h2>
 <ol>
