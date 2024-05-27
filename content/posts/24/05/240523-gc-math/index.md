@@ -71,10 +71,10 @@ $$
 Such that:
 
 $$
-dom\left(\Sigma'\right) \cap \left(\left(\bigcup_{v \in roots\left(\Sigma\right)} L\left(v\right)\right) \cup L\left(c\right) \cup L\left(\kappa\right)\right) = \emptyset
+\Sigma' \cap \left(L\left(c\right) \cup L\left(\kappa\right)\right) = \emptyset
 $$
 
-Where $L\left(x\right)$ refers to the live memory reachable from $x$, $dom\left(x\right)$ refers to the domain of $x$, and $roots\left(x\right)$ refers to the roots of the memory $x$.
+Where $L\left(x\right)$ refers to the live memory reachable from $x$.
 
 Now, that looks intimidating.
 However, I promise it's not as bad as it seems.
@@ -82,7 +82,7 @@ So, what does this mean?
 
 The key idea is that garbage collection is a function that partitions the memory allocated by the program before garbage collection, $\Sigma^+$, into two mutually exclusive portions.
 One of which, $\Sigma$, becomes the allocated memory accessible to the program after garbage collection and the other, $\Sigma'$, is discarded.
-Furthermore, $\Sigma'$ is defined such that no memory reachable from (1) the current expression being evaluated and its environment, (2) the continuation to which the program returns, and (3) any of the roots of the program's memory is in the discarded portion, $\Sigma'$.
+Furthermore, $\Sigma'$ is defined such that no memory reachable from (1) the current expression being evaluated and its environment and (2) the continuation to which the program returns.
 
 In other words, garbage collection is defined as a function that discards only memory that is not reachable from the program's current state.
 
@@ -118,3 +118,51 @@ Let's give an actual example of this.
 Here, we'll use a very simple garbage collection algorithm: Mark and Sweep.
 How does mark and sweep work?
 It marks all the memory that needs to be kept and sweeps the rest away.
+
+That's very abstract so let's break it down further.
+The steps of mark and sweep garbage collection are:
+
+1. Color all memory white
+2. Color all memory immediately reachable from the current state (all the roots) grey
+3. Pick a grey memory object
+4. Color all memory reachable by that grey object
+5. Color that grey object black
+6. Repeat steps 3. through 5. until there are no grey objects
+
+Now, I promised math, so let's do some math.
+We can represent garbage collection as a state machine:
+
+$$
+\left\langle G, B, \Sigma \right\rangle
+$$
+
+Note that since all allocated memory will either be grey, black, or white, the white memory is the memory that is not grey or black: $W = \Sigma \setminus \left(G \cup B \right)$.
+
+We can represent step 1 as:
+
+$$
+\left\langle \emptyset, \emptyset, \Sigma \right\rangle
+$$
+
+All memory is marked as white.
+For our initial marking (step 2):
+
+$$
+\left\langle L\left(c \right) \cup L\left(\kappa \right) \right\rangle
+$$
+
+Steps 3. through 5. can be represented with a single function mapping:
+
+$$
+\left\langle G, B, \Sigma \right\rangle \mapsto {\left\langle\left(G \cup L\left(\sigma\right)\right)\setminus\left(B \cup \left\{\sigma\right\}\right), B \cup \left\{\sigma\right\}, \Sigma\right\rangle}_{\sigma \in G}
+$$
+
+A grey object ($\sigma \in G$) is chosen, all memory reachable from the object this is not marked black is colored grey ($G \mapsto \left(G \cup L\left(\sigma\right)\right)\setminus\left(B \cup \left\{\sigma\right\}\right)$), and then the object is colored black ($B \mapsto B \cup \left\{\sigma\right\}$).
+
+Eventually, all grey elements will be colored white or black:
+
+$$
+\left\langle \emptyset , B, \Sigma \right\rangle
+$$
+
+And just like that, we have a mathematical model of garbage collection!
