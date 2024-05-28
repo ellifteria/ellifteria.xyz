@@ -1,0 +1,367 @@
+
+<!DOCTYPE html>
+<html>
+
+    <head>
+
+        <meta charset="UTF-8">
+        <link rel="stylesheet" href="/css/main.css">
+
+        
+    <title>ellifteria.xyz | Semi-Space Garbage Collection Part 2</title>
+
+
+        
+
+<script>
+    if (typeof main === "undefined"){
+        var main = function() {};
+    }
+</script>
+
+
+
+        
+
+<link rel="apple-touch-icon-precomposed" sizes="57x57" href="apple-touch-icon-57x57.png" />
+<link rel="apple-touch-icon-precomposed" sizes="114x114" href="apple-touch-icon-114x114.png" />
+<link rel="apple-touch-icon-precomposed" sizes="72x72" href="apple-touch-icon-72x72.png" />
+<link rel="apple-touch-icon-precomposed" sizes="144x144" href="apple-touch-icon-144x144.png" />
+<link rel="apple-touch-icon-precomposed" sizes="60x60" href="apple-touch-icon-60x60.png" />
+<link rel="apple-touch-icon-precomposed" sizes="120x120" href="apple-touch-icon-120x120.png" />
+<link rel="apple-touch-icon-precomposed" sizes="76x76" href="apple-touch-icon-76x76.png" />
+<link rel="apple-touch-icon-precomposed" sizes="152x152" href="apple-touch-icon-152x152.png" />
+<link rel="icon" type="image/png" href="favicon-196x196.png" sizes="196x196" />
+<link rel="icon" type="image/png" href="favicon-96x96.png" sizes="96x96" />
+<link rel="icon" type="image/png" href="favicon-32x32.png" sizes="32x32" />
+<link rel="icon" type="image/png" href="favicon-16x16.png" sizes="16x16" />
+<link rel="icon" type="image/png" href="favicon-128.png" sizes="128x128" />
+<meta name="application-name" content="&nbsp;"/>
+<meta name="msapplication-TileColor" content="#FFFFFF" />
+<meta name="msapplication-TileImage" content="mstile-144x144.png" />
+<meta name="msapplication-square70x70logo" content="mstile-70x70.png" />
+<meta name="msapplication-square150x150logo" content="mstile-150x150.png" />
+<meta name="msapplication-wide310x150logo" content="mstile-310x150.png" />
+<meta name="msapplication-square310x310logo" content="mstile-310x310.png" />
+
+
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/color-brewer.min.css">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+        <script src="https://cdn.jsdelivr.net/npm/highlightjs-line-numbers.js/dist/highlightjs-line-numbers.min.js"></script>
+
+    
+    
+
+        <script>hljs.highlightAll(); hljs.initLineNumbersOnLoad({singleLine: true});</script>
+
+        <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+        <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+        <style>
+
+
+		td.hljs-ln-numbers {
+			text-align: center;
+			color: #ccc;
+			border-right: 1px solid #999;
+			vertical-align: top;
+			padding-right: 5px;
+
+			-webkit-touch-callout: none;
+			-webkit-user-select: none;
+			-khtml-user-select: none;
+			-moz-user-select: none;
+			-ms-user-select: none;
+			user-select: none;
+		}
+		td.hljs-ln-code {
+			padding-left: 10px;
+		}
+
+		code {
+			white-space: pre-wrap;
+			overflow: auto;
+		}
+	
+        </style>
+    </head>
+
+    <body onload="main()">
+        <header>
+            
+
+<div class="column">
+    <div class="navigation">
+        |
+        
+            
+                <a href="/">Home</a> |
+            
+        
+            
+                <a href="/tiwo">TIWO</a> |
+            
+        
+            
+                <a href="/bookshelf">Bookshelf</a> |
+            
+        
+    </div>
+    <div class="breadcrumb">
+        <a href="/">ellifteria.xyz</a>
+    </div>
+</div>
+
+
+        </header>
+        
+        <article>
+            <section>
+                
+
+    
+    <h1>Semi-Space Garbage Collection Part 2</h1>
+    
+    <p>
+        Series: <a href="/posts/series/gc">Garbage Collection</a>
+    </p>
+    
+    
+    
+        <div class="pathToPage">
+            <p>
+                <a href="/">~</a>
+                
+                    /
+                    <strong>
+                        
+                        <a href="/posts" >Posts</a>
+                        
+                    </strong>
+                
+                    /
+                    <strong>
+                        
+                        <a href="/posts/24/05/240527-semispace-gc-code" class="self">Semi-Space Garbage Collection Part 2</a>
+                        
+                    </strong>
+                
+            </p>
+        </div>
+    
+
+    <p class="subtitle">A Deep Dive into Implementing a Two-Space Copying Garbage Collector</p>
+
+
+    
+
+<p><a href="../240523-semispace-gc">Last time</a>, we covered how semi-space garbage collection works using Cheney's algorithm.
+Here, we'll actually implement the algorithm in code.</p>
+<h2 id="cheneys-algorithm-in-javascript">Cheney's Algorithm in JavaScript</h2>
+<pre><code class="language-js">class TwoSpaceCopyingCollector extends Collector {
+    constructor(size) {
+        super();
+
+        if (!isInteger(size) || size &lt;= 6) {
+            console.error(`new Collector: illegal size: ${size}`);
+            return null;
+        }
+
+        this.size = size
+        this.heap = new Heap(this.size);
+        let fromPointer = 4;
+        let toPointer = integerDivision(size - 4, 2) + 4;
+        this.heap.heapFill(0, this.size, &quot;free&quot;);
+        this.heap.heapSet(0, fromPointer);
+        this.heap.heapSet(1, toPointer);
+        this.heap.heapSet(2, fromPointer);
+        this.heap.heapSet(3, toPointer);
+
+    }
+    
+    copyFrom(pointer) {
+        let freePointer = this.heap.heapGet(3);
+        switch(this.heap.heapGet(pointer)) {
+            case &quot;forward&quot;:
+                return this.heap.heapGet(pointer + 1);
+            case &quot;flat&quot;:
+                this.heap.heapSet(freePointer, &quot;flat&quot;);
+                this.heap.heapSet(freePointer + 1, this.heap.heapGet(pointer + 1));
+                this.heap.heapSet(pointer, &quot;forward&quot;);
+                this.heap.heapSet(pointer + 1, freePointer);
+                this.heap.heapSet(3, freePointer + 2);
+                break;
+            case &quot;cons&quot;:
+                this.heap.heapSet(freePointer, &quot;cons&quot;);
+                this.heap.heapSet(freePointer + 1, this.heap.heapGet(pointer + 1));
+                this.heap.heapSet(freePointer + 2, this.heap.heapGet(pointer + 2));
+                this.heap.heapSet(pointer, &quot;forward&quot;);
+                this.heap.heapSet(pointer + 1, freePointer);
+                this.heap.heapSet(3, freePointer + 3);
+                break;
+            default:
+                console.error(`Collector.copyFrom: unknown tag: ${this.heap.heapGet(pointer)}`);
+                return null;
+        }
+        return freePointer;
+    };
+    
+    collectGarbageStep() {
+        let scanPointer = this.heap.heapGet(2);
+        let tag = this.heap.heapGet(scanPointer);
+        switch(tag) {
+            case &quot;flat&quot;:
+                this.heap.heapSet(2, scanPointer + 2);
+                break;
+            case &quot;cons&quot;:
+                this.heap.heapSet(scanPointer + 1, this.copyFrom(this.heap.heapGet(scanPointer + 1)));
+                this.heap.heapSet(scanPointer + 2, this.copyFrom(this.heap.heapGet(scanPointer + 2)));
+                this.heap.heapSet(2, scanPointer + 3);
+                break;
+            default:
+                console.error(`Collector.collectGarbage: unknown tag: ${tag}`);
+                return null;
+        }
+    }
+    
+    collectGarbage(root1, root2) {
+        this.heap.heapSet(2, this.heap.heapGet(1));
+        this.heap.heapSet(3, this.heap.heapGet(1));
+        
+        let newRoot1 = false;
+        let newRoot2 = false;
+        
+        if (root1 != false) {
+            newRoot1 = this.copyFrom(root1);
+            this.moveRoot(root1, newRoot1);
+        }
+        if (root2 != false) {
+            newRoot2 = this.copyFrom(root2);
+            this.moveRoot(root2, newRoot2);
+        }
+
+        let currentRoots = this.roots.values().toArray();
+        for (const root of currentRoots) {
+            let newRoot = this.copyFrom(root);
+            this.moveRoot(root, newRoot);
+        }
+        
+        while (this.heap.heapGet(2) &lt; this.heap.heapGet(3)) {
+            this.collectGarbageStep();
+        }
+
+        this.cleanUpCollection();
+        
+        return [newRoot1, newRoot2];
+    };
+    
+    cleanUpCollection() {
+        let oldFromPointer = this.heap.heapGet(0);
+        let oldToPointer = this.heap.heapGet(1);
+        
+        let endOfMemory = integerDivision(this.size - 4, 2) + oldFromPointer;
+        this.heap.heapFill(oldFromPointer, endOfMemory, &quot;free&quot;);
+        
+        this.heap.heapSet(0, oldToPointer);
+        this.heap.heapSet(1, oldFromPointer);
+        
+        if (oldToPointer &gt;= oldFromPointer) {
+            this.heap.heapSet(3, this.size);
+        } else {
+            this.heap.heapSet(3, oldFromPointer);
+        }
+    };
+    
+    spaceExists(amount) {
+        return this.heap.heapGet(3) &gt;= (this.heap.heapGet(2) + amount);
+    }
+    
+    allocate(data, asRoot = false) {
+        let allocationPointer = this.heap.heapGet(2);
+        
+        switch (data.tag) {
+            case &quot;flat&quot;:
+                if (this.spaceExists(2)) {
+                    this.heap.heapSet(allocationPointer, &quot;flat&quot;);
+                    this.heap.heapSet(allocationPointer + 1, data.value);
+                    this.heap.heapSet(2, allocationPointer + 2);
+                    if (asRoot) {
+                        this.addRoot(allocationPointer);
+                    }
+                } else {
+                    this.collectGarbage(false, false);
+                    if (this.spaceExists(2)) {
+                        allocationPointer = this.heap.heapGet(2);
+                        this.heap.heapSet(allocationPointer, &quot;flat&quot;);
+                        this.heap.heapSet(allocationPointer + 1, data.value);
+                        this.heap.heapSet(2, allocationPointer + 2);
+                        if (asRoot) {
+                            this.addRoot(allocationPointer);
+                        }
+                    } else {
+                        console.error(`Collector.allocate: out of memory in allocating: (flat ${data.value})`);
+                        return null;
+                    }
+                }
+                break;
+            case &quot;cons&quot;:
+                if (this.spaceExists(3)) {
+                    this.heap.heapSet(allocationPointer, &quot;cons&quot;);
+                    this.heap.heapSet(allocationPointer + 1, data.root1);
+                    this.heap.heapSet(allocationPointer + 2, data.root2);
+                    this.heap.heapSet(2, allocationPointer + 3);
+                    if (asRoot) {
+                        this.addRoot(allocationPointer);
+                    }
+                } else {
+                    let [newRoot1, newRoot2] = this.collectGarbage(data.root1, data.root2);
+                    if (this.spaceExists(3)) {
+                        allocationPointer = this.heap.heapGet(2);
+                        this.heap.heapSet(allocationPointer, &quot;cons&quot;);
+                        this.heap.heapSet(allocationPointer + 1, newRoot1);
+                        this.heap.heapSet(allocationPointer + 1, newRoot2);
+                        this.heap.heapSet(2, allocationPointer + 3);
+                        if (asRoot) {
+                            this.addRoot(allocationPointer);
+                        }
+                    } else {
+                        console.error(`Collector.allocate: out of memory in allocating: (cons ${data.root1} ${data.root2})`);
+                        return null;
+                    }
+                }
+                break;
+            default:
+                console.error(`Collector.allocate: unknown tag: ${tag}`);
+                return null;
+        }
+
+        return allocationPointer;
+    };
+}
+</code></pre>
+
+
+
+
+
+            </section>
+        </article>
+
+        <footer>
+            
+
+    <div>Powered by
+        <a href="https://golang.org/">Go</a> and
+        <a href="https://github.com/ellifteria/grafe">graf&emacr;</a>
+    </div>
+
+
+        </footer>
+    </body>
+
+</html>
+
+
+
+
