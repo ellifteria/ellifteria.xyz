@@ -63,6 +63,8 @@ Nope.
 This is where garbage collection comes in.
 Since the run system for Python is garbage collected, a garbage collector comes in and automatically frees memory that is no longer being used.
 
+### History of Garbage Collection
+
 ### What Languages Use Garbage Collection and Why?
 
 So by now we know that not all languages use garbage collection.
