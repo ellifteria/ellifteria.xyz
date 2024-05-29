@@ -33,5 +33,14 @@ postSections:
                 series:
                     name: Garbage Collection
                     link: /posts/series/gc
+    -   name: Mar 2024
+        posts: 
+            -   name: Esterel in Racket
+                summary: Synchronous Reactive Programming
+                link: 24/03/240326-esterel-intro
+                date: 26 Mar 2024
 navbarName: Posts
 ---
+
+Here are various posts I've written on random topics!
+Some things I want to write about (if I ever have the time) include: TTRPGs and TTRPG design, how to write various ML algorithms, PL modeling, and more!

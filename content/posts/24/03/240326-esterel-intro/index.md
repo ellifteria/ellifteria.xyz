@@ -1,14 +1,12 @@
 ---
-title: Intro to Esterel
-summary: Introduction to Esterel and Esterel in Racket
+title: Esterel in Racket
+summary: Synchronous Reactive Programming
 template: page
 path:
-    -   name: Notes
-        link: /notes
-    -   name: Esterel
-        link: /notes/2024/nu/esterel
-    -   name: Intro
-        link: /notes/2024/nu/esterel/03/26/intro
+    -   name: Posts
+        link: /posts
+    -   name: Esterel in Racket
+        link: /posts/24/03/240326-esterel-intro
         self: true
 ---
 

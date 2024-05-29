@@ -71,10 +71,10 @@ Well, it does have few benefits:
 
 ## What are Some of the Drawbacks to Two-Space Copying Garbage Collection
 
-That being said, it does have some downsides:
+That being said, it does have downsides:
 
 1. **Only half of the heap is able to be used for storing objects since the other half is needed for collection** Since we need to have heap space open for copying live objects during collection, we can't use the entire heap to store data. In fact, since theoretically all objects could still be live when collecting garbage, we need the same amount of space available in both the From Space and To Space. So, we can only use half the heap when allocating data.
-2. **Has terrible memory locality** Semi-space garbage collection essentially uses breadth-first search. This means that the garbage collection has terrible virtual memory performance. Why? Objects aren't copied over next to the objects they reference—that would require depth-first search. Therefore, objects are likely to be stored in different pages than the ones that contain the objects it references.
+2. **Has terrible memory locality** Semi-space garbage collection essentially uses breadth-first search. This means that the garbage collection has terrible virtual memory performance. Why? Objects aren't copied over to the To Space next to the objects they reference—that would require depth-first search. Therefore, objects are likely to be stored in different virtual memory pages than the ones that contain any objects they references.
 3. **Requires the entire program to stop executing to collect garbage** Like other stop-the-world methods, program execution has to completely stop while garbage is collected.
 
 ## How Does Two-Space Copying Garbage Collection Work

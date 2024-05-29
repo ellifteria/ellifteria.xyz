@@ -15,7 +15,7 @@ navbarName: Home
 
 ## Sections
 
-- [[/tiwo/index|Things I'm Working On]]
+- [[/posts/index|Posts]]
 - [[/bookshelf/index|My Bookshelf]]
-- [[/notes/index|Notes]]
-<!-- - [[/thoughts/index|thoughts]] -->
+- [[/tiwo/index|Things I'm Working On]]
+<!-- - [[/notes/index|Notes]] -->

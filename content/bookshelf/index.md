@@ -19,7 +19,7 @@ navbarName: Bookshelf
 
 | Progress | Book | Author |
 |:---:|:---:|:---:|
-27% | *Red Rising* | Pierce Brown
+<!-- 27% | *Red Rising* | Pierce Brown -->
 <!-- 5% | *Hadji Murat* | Leo Tolstoy -->
 <!-- 5% | *Born in Tibet* | Chogyam Trungpa -->
 
@@ -31,6 +31,8 @@ navbarName: Bookshelf
 
 |Rating | Book | Author|
 |:---:|:---:|:---:|
+⭐️ ⭐️ ⭐️ ⭐️ ⭐️ | *Mistborn: The Final Empire* | Brandon Sanderson
+⭐️ ⭐️ ⭐️ ⭐️ ⭐️ | *Queen Amid Ashes* | Christopher Ruocchio
 ⭐️ ⭐️ ⭐️ ⭐️ ⭐️ | *The Lesser Devil* | Christopher Ruocchio
 🌟 🌟 🌟 🌟 🌟 | *Empire of Silence* | Christopher Ruocchio
 ⭐️ ⭐️ ⭐️ ⭐️ ⭐️ | *A Desolation Called Peace* | Arkady Martine

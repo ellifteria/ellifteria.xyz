@@ -7,6 +7,6 @@ navbarItems:
         link: /tiwo
     -   name: Bookshelf
         link: /bookshelf
-    # -   name: Posts
-    #     link: /posts
+    -   name: Posts
+        link: /posts
 ---

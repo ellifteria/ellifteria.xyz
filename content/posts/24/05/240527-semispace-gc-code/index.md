@@ -14,15 +14,15 @@ series:
 ---
 
 [Last time](../240523-semispace-gc), we covered how semi-space garbage collection works using Cheney's algorithm.
-Here, we'll actually implement the algorithm in code.
+Let's finally write some code!
 
 ## Cheney's Algorithm in JavaScript
 
 ### Givens
 
-Let's assume we already have some data structures defined<label for="sidenote--sn1" class="margin-toggle sidenote-number"></label><input type="checkbox" id="sidenote--sn1" class="margin-toggle"/><span class="sidenote">
+To make life easier for ourselves, let's assume we already have some classes defined<label for="sidenote--sn1" class="margin-toggle sidenote-number"></label><input type="checkbox" id="sidenote--sn1" class="margin-toggle"/><span class="sidenote">
 They actually are already defined and can be found [here](https://github.com/ellifteria/cheneys-gc.js).
-</span>.
+</span> defined.
 First, we have a `Heap` class that provides the following methods:
 
 1. `heapSet(address, value)`: Sets `address` in the heap to `value` if `address` is a valid address.
@@ -30,17 +30,13 @@ First, we have a `Heap` class that provides the following methods:
 3. `heapFill(startAddress, endAddress, value)`: Fills all addresses between `startAddress` (inclusive) and `endAddress` (exclusive) with `value`.
 
 Next, we have a `Collector` class to represent an abstract garbage collector.
-The `Collector` class has the following methods defined:
+The `Collector` class has the following methods that all throw `not yet implemented` errors and need to be filled in by a class inheriting from `Collector`<label for="sidenote--sn2" class="margin-toggle sidenote-number"></label><input type="checkbox" id="sidenote--sn2" class="margin-toggle"/><span class="sidenote">
+The `Collector` class also includes `addRoot(root)`, `removeRoot(root)`, and `moveRoot(oldRoot, newRoot)` methods that do have definitions; however, we won't use them here.
+</span>:
 
-1. `addRoot(root)`:
-2. `removeRoot(root)`:
-3. `moveRoot(oldRoot, newRoot)`:
-
-And the following methods that all throw `not yet implemented` errors and need to be filled in by a class inheriting from `Collector`:
-
-1. `collectGarbage(root1, root2)`:
-2. `spaceExists(amount)`:
-3. `allocate(data, asRoot = false)`:
+1. `collectGarbage(root1, root2)`: This is the method we'll call to actually collect garbage.
+2. `spaceExists(amount)`: This method should check if there's any space left in the heap or if we need to collect garbage.
+3. `allocate(data, asRoot = false)`: Here is where we'll allocate memory—we won't fill this one in in this post.
 
 ```js
 class TwoSpaceCopyingCollector extends Collector {
