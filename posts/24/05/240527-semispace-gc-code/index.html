@@ -159,6 +159,29 @@
 <p><a href="../240523-semispace-gc">Last time</a>, we covered how semi-space garbage collection works using Cheney's algorithm.
 Here, we'll actually implement the algorithm in code.</p>
 <h2 id="cheneys-algorithm-in-javascript">Cheney's Algorithm in JavaScript</h2>
+<h3 id="givens">Givens</h3>
+<p>Let's assume we already have some data structures defined<label for="sidenote--sn1" class="margin-toggle sidenote-number"></label><input type="checkbox" id="sidenote--sn1" class="margin-toggle"/><span class="sidenote">
+They actually are already defined and can be found <a href="https://github.com/ellifteria/cheneys-gc.js">here</a>.
+</span>.
+First, we have a <code>Heap</code> class that provides the following methods:</p>
+<ol>
+<li><code>heapSet(address, value)</code>: Sets <code>address</code> in the heap to <code>value</code> if <code>address</code> is a valid address.</li>
+<li><code>heapGet(address)</code>: Returns the value stored in <code>address</code> if it is a valid address.</li>
+<li><code>heapFill(startAddress, endAddress, value)</code>: Fills all addresses between <code>startAddress</code> (inclusive) and <code>endAddress</code> (exclusive) with <code>value</code>.</li>
+</ol>
+<p>Next, we have a <code>Collector</code> class to represent an abstract garbage collector.
+The <code>Collector</code> class has the following methods defined:</p>
+<ol>
+<li><code>addRoot(root)</code>:</li>
+<li><code>removeRoot(root)</code>:</li>
+<li><code>moveRoot(oldRoot, newRoot)</code>:</li>
+</ol>
+<p>And the following methods that all throw <code>not yet implemented</code> errors and need to be filled in by a class inheriting from <code>Collector</code>:</p>
+<ol>
+<li><code>collectGarbage(root1, root2)</code>:</li>
+<li><code>spaceExists(amount)</code>:</li>
+<li><code>allocate(data, asRoot = false)</code>:</li>
+</ol>
 <pre><code class="language-js">class TwoSpaceCopyingCollector extends Collector {
     constructor(size) {
         super();

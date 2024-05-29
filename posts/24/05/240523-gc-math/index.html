@@ -193,13 +193,15 @@ In other words, a programming language with garbage collection must evaluate in 
 Given a state:</p>
 <p><span class="math display">\[\left\langle c, \kappa, \Sigma^+\right\rangle
 \]</span></p>
-<p>Made up of a current expression and it's environment, <span class="math inline">\(c = \left\langle e, \rho \right\rangle\)</span>; a continuation, <span class="math inline">\(\kappa\)</span>, to return to after evaluating the current expression; and the memory allocated by a program, <span class="math inline">\(\Sigma^+\)</span>, garbage collection is defines as:</p>
-<p><span class="math display">\[\left\langle c, \kappa, \Sigma \oplus \Sigma' \right\rangle \mapsto \left\langle c, \kappa, \Sigma \right\rangle
+<p>Made up of a current expression and it's environment, <span class="math inline">\(c = \left\langle e, \rho \right\rangle\)</span>; a continuation, <span class="math inline">\(\kappa\)</span>, to return to after evaluating the current expression; and the memory allocated by a program, <span class="math inline">\(\Sigma^+\)</span>, garbage collection is defined as:</p>
+<p><span class="math display">\[\left\langle c, \kappa, \Sigma \oplus \Sigma' \right\rangle \rightarrow \left\langle c, \kappa, \Sigma \right\rangle
 \]</span></p>
 <p>Such that:</p>
 <p><span class="math display">\[\Sigma' \cap \left(L\left(c\right) \cup L\left(\kappa\right)\right) = \emptyset
 \]</span></p>
-<p>Where <span class="math inline">\(L\left(x\right)\)</span> refers to the live memory reachable from <span class="math inline">\(x\)</span>.</p>
+<p>Where <span class="math inline">\(L\left(x\right)\)</span> refers to the live memory reachable from <span class="math inline">\(x\)</span>.
+We'll also define another function, <span class="math inline">\(L_i\left(x\right)\)</span>, which will be the memory immediately reachable from <span class="math inline">\(x\)</span>—in other words, the memory directly referenced by <span class="math inline">\(x\)</span> and <span class="math inline">\(x\)</span> itself.
+Now we can define <span class="math inline">\(y \in L\left(x\right)\)</span> such that <span class="math inline">\(\exists x_1, \dots, x_n\)</span> where <span class="math inline">\(y \in L_i\left(x_n\right)\)</span>, <span class="math inline">\(x_n \in L_i\left(x_{n-1}\right)\)</span>, <span class="math inline">\(\dots\)</span>, <span class="math inline">\(x_1 \in L_i\left(x\right)\)</span>.</p>
 <p>Now, that looks intimidating.
 However, I promise it's not as bad as it seems.
 So, what does this mean?</p>
@@ -219,11 +221,12 @@ By definition, the intersection of the empty set with anything else is the empty
 So, if <span class="math inline">\(\Sigma'=\emptyset\)</span>, the definition of garbage collection is still satisfied.
 However, this means that we discarded no memory; the memory accessible to the program after garbage collection is the same as the memory accessible to the program before garbage collection.
 A garbage collector that doesn't collect any garbage ever is not a terribly useful garbage collector.</p>
-<p>Furthermore, the definition doesn't tell us <em>how</em> we should be collecting garbage either.
-All it states is &quot;garbage collection is a function that only changes the memory accessible to a program and discards only un-alive memory that is not accessible from the current state of the program.&quot;</p>
+<p>Lastly, the definition doesn't tell us <em>how</em> we should be collecting garbage either.
+All it states is &quot;garbage collection is a function that only changes the memory accessible to a program and discards only un-alive memory that is not accessible from the current state of the program.&quot;
+It doesn't explain what steps we should take to collect garbage, how we choose which memory should be kept, etc.</p>
 <p>So then, why would we model garbage collection like this?
 Just to make mathematicians happy?
-Well, there actually is a very good reason if we go a step further and mathematically model <em>how</em> we collect garbage.</p>
+Well, there actually is a very good reason if we go a step further and delve into that last problem, if we mathematically model <em>how</em> we collect garbage.</p>
 <p>Let's say we mathematically model all of the steps we take to collect garbage.
 In other words, we provide mathematical functions that map how we partition <span class="math inline">\(\Sigma^+\)</span> into <span class="math inline">\(\Sigma\)</span> and <span class="math inline">\(\Sigma'\)</span>.
 By doing so, we would be able to write a mathematical proof that shows that by applying those functions until <span class="math inline">\(\Sigma^+\)</span> is fully partitioned, we meet the definition of garbage collection.
@@ -245,24 +248,83 @@ The steps of mark and sweep garbage collection are:</p>
 </ol>
 <p>Now, I promised math, so let's do some math.
 We can represent garbage collection as a state machine:</p>
-<p><span class="math display">\[\left\langle G, B, \Sigma \right\rangle
+<p><span class="math display">\[\left\langle G, B, \Sigma^+ \right\rangle
 \]</span></p>
-<p>Note that since all allocated memory will either be grey, black, or white, the white memory is the memory that is not grey or black: <span class="math inline">\(W = \Sigma \setminus \left(G \cup B \right)\)</span>.</p>
+<p>Note that since all allocated memory will either be grey, black, or white, the white memory is the memory that is not grey or black: <span class="math inline">\(W = \Sigma^+ \setminus \left(G \cup B \right)\)</span>.</p>
 <p>We can represent step 1 as:</p>
-<p><span class="math display">\[\left\langle \emptyset, \emptyset, \Sigma \right\rangle
+<p><span class="math display">\[\left\langle \emptyset, \emptyset, \Sigma^+ \right\rangle
 \]</span></p>
 <p>All memory is marked as white.
-For our initial marking (step 2):</p>
-<p><span class="math display">\[\left\langle L\left(c \right) \cup L\left(\kappa \right) \right\rangle
+For our initial marking (step 2), we set <span class="math inline">\(G = L_i\left(c\right) \cup L_i\left(\kappa\right)\)</span>:</p>
+<p><span class="math display">\[\left\langle L_i\left(c \right) \cup L_i\left(\kappa \right), \emptyset, \Sigma^+ \right\rangle
 \]</span></p>
 <p>Steps 3. through 5. can be represented with a single function mapping:</p>
-<p><span class="math display">\[\left\langle G, B, \Sigma \right\rangle \mapsto {\left\langle\left(G \cup L\left(\sigma\right)\right)\setminus\left(B \cup \left\{\sigma\right\}\right), B \cup \left\{\sigma\right\}, \Sigma\right\rangle}_{\sigma \in G}
+<p><span class="math display">\[\left\langle G, B, \Sigma^+ \right\rangle \rightarrow {\left\langle\left(G \cup L_i\left(\sigma\right)\right)\setminus\left(B \cup \left\{\sigma\right\}\right), B \cup \left\{\sigma\right\}, \Sigma^+\right\rangle}_{\sigma \in G}
 \]</span></p>
-<p>A grey object (<span class="math inline">\(\sigma \in G\)</span>) is chosen, all memory reachable from the object this is not marked black is colored grey (<span class="math inline">\(G \mapsto \left(G \cup L\left(\sigma\right)\right)\setminus\left(B \cup \left\{\sigma\right\}\right)\)</span>), and then the object is colored black (<span class="math inline">\(B \mapsto B \cup \left\{\sigma\right\}\)</span>).</p>
-<p>Eventually, all grey elements will be colored white or black:</p>
-<p><span class="math display">\[\left\langle \emptyset , B, \Sigma \right\rangle
+<p>A grey object (<span class="math inline">\(\sigma \in G\)</span>) is chosen, all memory reachable from the object this is not marked black is colored grey (<span class="math inline">\(G \rightarrow \left(G \cup L_i\left(\sigma\right)\right)\setminus\left(B \cup \left\{\sigma\right\}\right)\)</span>), and then the object is colored black (<span class="math inline">\(B \rightarrow B \cup \left\{\sigma\right\}\)</span>).</p>
+<p>Eventually, all elements will be colored white or black:</p>
+<p><span class="math display">\[\left\langle \emptyset , B, \Sigma^+ \right\rangle
+\]</span></p>
+<p>Now, we have to plug this into our definition of garbage collection.
+Since <span class="math inline">\(B\)</span>, the memory we colored black, contains all the memory that is reachable from the current program state, <span class="math inline">\(B\)</span> is the live memory that should be kept post-garbage collection.
+Everything else can be swept away.
+Therefore, when we partition <span class="math inline">\(\Sigma^+\)</span> into <span class="math inline">\(\Sigma\)</span> (the memory we keep) and <span class="math inline">\(\Sigma'\)</span> (the memory we discard), we just need to set <span class="math inline">\(\Sigma = B\)</span>.</p>
+<p><span class="math display">\[\left\langle c, \kappa, \Sigma^+ \right\rangle \rightarrow \left\langle c, \kappa, \Sigma \right\rangle
+\]</span></p>
+<p>Such that:</p>
+<p><span class="math display">\[\left\langle L_i\left(c \right) \cup L_i\left(\kappa \right), \emptyset, \Sigma^+ \right\rangle \twoheadrightarrow_{gc} \left\langle \emptyset , \Sigma, \Sigma^+ \right\rangle
+\]</span></p>
+<p>Where <span class="math inline">\(gc\)</span> is defined as:</p>
+<p><span class="math display">\[\left\langle G, B, \Sigma \right\rangle \rightarrow _{gc} {\left\langle\left(G \cup L_i\left(\sigma\right)\right)\setminus\left(B \cup \left\{\sigma\right\}\right), B \cup \left\{\sigma\right\}, \Sigma\right\rangle}_{\sigma \in G}
 \]</span></p>
 <p>And just like that, we have a mathematical model of garbage collection!</p>
+<h3 id="ok-but-why-do-we-care">Ok, But Why Do We Care?</h3>
+<p>Why is this important?
+We talked about proving properties of garbage collection.
+So, let's prove that mark and sweep <em>actually</em> satisfies the definition of garbage collection.</p>
+<p>Recall that we defined each garbage collection step is defined with:</p>
+<p><span class="math display">\[\left\langle G, B, \Sigma \right\rangle \rightarrow _{gc} {\left\langle\left(G \cup L_i\left(\sigma\right)\right)\setminus\left(B \cup \left\{\sigma\right\}\right), B \cup \left\{\sigma\right\}, \Sigma\right\rangle}_{\sigma \in G}
+\]</span></p>
+<p>And that the garbage collection <em>must</em> satisfy:</p>
+<p><span class="math display">\[\left(\Sigma^+ \setminus \Sigma\right) \cap \left(L\left(c\right) \cup L\left(\kappa\right)\right) = \emptyset
+\]</span></p>
+<p>How do we prove that our garbage collections satisfy this?</p>
+<p>Let's write a proof by contradiction.</p>
+<p>We'll start by supposing for the purpose of contradiction that there exists an object <span class="math inline">\(\sigma'\)</span> such that:</p>
+<p><span class="math display">\[\sigma' \in \left(\Sigma^+ \setminus \Sigma\right) \cap \left(L\left(c\right) \cup L\left(\kappa\right)\right)
+\]</span></p>
+<p>In other words, <span class="math inline">\(\sigma'\)</span> is both in the discarded memory and is reachable by the current program state.
+Big no-no.</p>
+<p>Recall that we set <span class="math inline">\(\Sigma = B\)</span> once <span class="math inline">\(G = \emptyset\)</span>.
+Therefore, <span class="math inline">\(\sigma' \notin B\)</span>.</p>
+<p>However, <span class="math inline">\(\sigma' \in \left(L\left(c\right) \cup L\left(\kappa\right)\right)\)</span>.
+Therefore, there must exist some <span class="math inline">\(x_1, x_2, \dots x_n\)</span> such that <span class="math inline">\(\sigma' \in L_i\left(x_n\right)\)</span>, <span class="math inline">\(x_n \in L_i\left(x_{n-1}\right)\)</span>, <span class="math inline">\(\dots\)</span>, <span class="math inline">\(x_1 \in \left(L_i\left(c\right) \cup L_i\left(\kappa\right)\right)\)</span>.
+As such, there exists a step where <span class="math inline">\(x_1 \in G\)</span>.
+Therefore, there exist steps where <span class="math inline">\(x_2 \in G\)</span>, <span class="math inline">\(\dots\)</span>, <span class="math inline">\(x_n \in G\)</span>.
+Therefore, there exists a step when <span class="math inline">\(\sigma' \in G\)</span>.
+Since <span class="math inline">\(\forall \sigma \in G\)</span>, <span class="math inline">\(\sigma\)</span> is moved into <span class="math inline">\(B\)</span> eventually, <span class="math inline">\(\sigma'\)</span> must be moved into <span class="math inline">\(B\)</span> eventually.</p>
+<p>This is a contradiction;
+<span class="math inline">\(\sigma' \in B\)</span> and <span class="math inline">\(\sigma' \notin B\)</span> cannot both be true.
+Therefore, <span class="math inline">\(\not\exists \sigma'\)</span> such that <span class="math inline">\(\sigma' \in \left(\Sigma^+ \setminus \Sigma\right) \cap \left(L\left(c\right) \cup L\left(\kappa\right)\right)\)</span>.</p>
+<p>Therefore,</p>
+<p><span class="math display">\[\left(\Sigma^+ \setminus \Sigma\right) \cap \left(L\left(c\right) \cup L\left(\kappa\right)\right) = \emptyset
+\]</span></p>
+<p>And there we go!
+We have proven that our garbage collection function satisfies the definition of garbage collection.
+Mark and sweep, if implemented in such a way that aligns with our mathematical model, will not discard any live memory.</p>
+<h2 id="tldr">Tl;dr</h2>
+<p>What's the takeaway from all this?
+Mathematically modeling programming languages and garbage collection allows us to prove properties of programming languages and garbage collection.
+It also helps describe how a programming language should be implemented.
+This lets us implement safer and more secure programming languages!</p>
+<p>This simple example may not look like much but it's actually <em>very</em> important.
+Knowing for certain that garbage collection doesn't discard memory that's still reachable is essential.
+Otherwise, we would end up with countless seg faults<label for="sidenote--sn4" class="margin-toggle sidenote-number"> </label><input type="checkbox" id="sidenote--sn4" class="margin-toggle"/><span class="sidenote">
+Essentially, we would risk accessing memory after freeing it over and over again since the garbage collector would be freeing memory that the programmer is still potentially using.
+</span>.</p>
+<p>Writing more complex mathematical models allows us to prove more complex and valuable properties of programming languages, allowing programmers to confidently write programs without the fear of needing to debug their programming language.</p>
+<p>This was definitely a much more mathematical post than usual, but I hope it was useful!
+<a href="../240523-semispace-gc/">Next time</a>, we'll go return from the world of mathematics and dive deep into semi-space copying garbage collection.</p>
 
 
 

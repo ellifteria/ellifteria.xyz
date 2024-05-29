@@ -109,9 +109,9 @@ p.subtitle {
     line-height: 1;
 }
 
-.numeral {
+/* .numeral {
     font-family: et-book-roman-old-style;
-}
+} */
 
 .danger {
     color: red;
@@ -294,7 +294,7 @@ img {
 
 .sidenote-number:after,
 .sidenote:before {
-    font-family: et-book-roman-old-style;
+    /* font-family: et-book-roman-old-style; */
     position: relative;
     vertical-align: baseline;
 }
