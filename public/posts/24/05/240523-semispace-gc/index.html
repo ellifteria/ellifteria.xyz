@@ -249,16 +249,17 @@ Then, program execution continues.</p>
 <p>Why might someone choose to use a two-space copying garbage collection?
 Well, it does have few benefits:</p>
 <ol>
-<li><strong>No memory fragmentation.</strong> Unlike strategies like mark and sweep which leave live objects in the same memory locations they were in before garbage collection, two-space copying collection moves all live objects close together, preventing memory fragmentation. In two-space copying collection, live objects post-collection are all at the start of the old To Space/ new From Space.</li>
-<li><strong>Collection time is proportional to the amount of live data.</strong> Two-space copying garbage collection only requires traversing the chains of live objects and live pointers, instead of iterating through all memory.</li>
-<li><strong>Allocation only requires incrementing a pointer.</strong> Allocation only requires storing an object in the next available memory location and then incrementing the pointer storing the location of the next available memory location.</li>
-<li><strong>Collection does not require much state.</strong> Collecting garbage will only require 4 extra garbage collection variables (we'll show this soon).</li>
+<li><strong>No memory fragmentation</strong> Unlike strategies like mark and sweep which leave live objects in the same memory locations they were in before garbage collection, two-space copying collection moves all live objects close together, preventing memory fragmentation. In two-space copying collection, live objects post-collection are all at the start of the old To Space/ new From Space.</li>
+<li><strong>Collection time is proportional to the amount of live data</strong> Two-space copying garbage collection only requires traversing the chains of live objects and live pointers, instead of iterating through all memory.</li>
+<li><strong>Allocation only requires incrementing a pointer</strong> Allocation only requires storing an object in the next available memory location and then incrementing the pointer storing the location of the next available memory location.</li>
+<li><strong>Collection does not require much state</strong> Collecting garbage will only require 4 extra garbage collection variables (we'll show this soon).</li>
 </ol>
 <h2 id="what-are-some-of-the-drawbacks-to-two-space-copying-garbage-collection">What are Some of the Drawbacks to Two-Space Copying Garbage Collection</h2>
 <p>That being said, it does have some downsides:</p>
 <ol>
-<li><strong>Only half of the heap is able to be used for storing objects since the other half is needed for collection.</strong> Since we need to have heap space open for copying live objects during collection, we can't use the entire heap to store data. In fact, since theoretically all objects could still be live when collecting garbage, we need the same amount of space available in both the From Space and To Space. So, we can only use half the heap when allocating data.</li>
-<li><strong>Requires the entire program to stop executing to collect garbage.</strong> Like other stop-the-world methods, program execution has to completely stop while garbage is collected.</li>
+<li><strong>Only half of the heap is able to be used for storing objects since the other half is needed for collection</strong> Since we need to have heap space open for copying live objects during collection, we can't use the entire heap to store data. In fact, since theoretically all objects could still be live when collecting garbage, we need the same amount of space available in both the From Space and To Space. So, we can only use half the heap when allocating data.</li>
+<li><strong>Has terrible memory locality</strong> Semi-space garbage collection essentially uses breadth-first search. This means that the garbage collection has terrible virtual memory performance. Why? Objects aren't copied over next to the objects they reference—that would require depth-first search. Therefore, objects are likely to be stored in different pages than the ones that contain the objects it references.</li>
+<li><strong>Requires the entire program to stop executing to collect garbage</strong> Like other stop-the-world methods, program execution has to completely stop while garbage is collected.</li>
 </ol>
 <h2 id="how-does-two-space-copying-garbage-collection-work">How Does Two-Space Copying Garbage Collection Work</h2>
 <p>Now that we know what two-space copying collection is, let's implement it!

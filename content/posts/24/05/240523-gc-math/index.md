@@ -62,10 +62,10 @@ $$
 \left\langle c, \kappa, \Sigma^+\right\rangle
 $$
 
-Made up of a current expression and it's environment, $c = \left\langle e, \rho \right\rangle$; a continuation, $\kappa$, to return to after evaluating the current expression; and the memory allocated by a program, $\Sigma^+$, garbage collection is defines as:
+Made up of a current expression and it's environment, $c = \left\langle e, \rho \right\rangle$; a continuation, $\kappa$, to return to after evaluating the current expression; and the memory allocated by a program, $\Sigma^+$, garbage collection is defined as:
 
 $$
-\left\langle c, \kappa, \Sigma \oplus \Sigma' \right\rangle \mapsto \left\langle c, \kappa, \Sigma \right\rangle
+\left\langle c, \kappa, \Sigma \oplus \Sigma' \right\rangle \rightarrow \left\langle c, \kappa, \Sigma \right\rangle
 $$
 
 Such that:
@@ -75,6 +75,8 @@ $$
 $$
 
 Where $L\left(x\right)$ refers to the live memory reachable from $x$.
+We'll also define another function, $L_i\left(x\right)$, which will be the memory immediately reachable from $x$—in other words, the memory directly referenced by $x$ and $x$ itself.
+Now we can define $y \in L\left(x\right)$ such that $\exists x_1, \dots, x_n$ where $y \in L_i\left(x_n\right)$, $x_n \in L_i\left(x_{n-1}\right)$, $\dots$, $x_1 \in L_i\left(x\right)$.
 
 Now, that looks intimidating.
 However, I promise it's not as bad as it seems.
@@ -100,12 +102,13 @@ So, if $\Sigma'=\emptyset$, the definition of garbage collection is still satisf
 However, this means that we discarded no memory; the memory accessible to the program after garbage collection is the same as the memory accessible to the program before garbage collection.
 A garbage collector that doesn't collect any garbage ever is not a terribly useful garbage collector.
 
-Furthermore, the definition doesn't tell us *how* we should be collecting garbage either.
+Lastly, the definition doesn't tell us *how* we should be collecting garbage either.
 All it states is "garbage collection is a function that only changes the memory accessible to a program and discards only un-alive memory that is not accessible from the current state of the program."
+It doesn't explain what steps we should take to collect garbage, how we choose which memory should be kept, etc.
 
 So then, why would we model garbage collection like this?
 Just to make mathematicians happy?
-Well, there actually is a very good reason if we go a step further and mathematically model *how* we collect garbage.
+Well, there actually is a very good reason if we go a step further and delve into that last problem, if we mathematically model *how* we collect garbage.
 
 Let's say we mathematically model all of the steps we take to collect garbage.
 In other words, we provide mathematical functions that map how we partition $\Sigma^+$ into $\Sigma$ and $\Sigma'$.
@@ -133,36 +136,130 @@ Now, I promised math, so let's do some math.
 We can represent garbage collection as a state machine:
 
 $$
-\left\langle G, B, \Sigma \right\rangle
+\left\langle G, B, \Sigma^+ \right\rangle
 $$
 
-Note that since all allocated memory will either be grey, black, or white, the white memory is the memory that is not grey or black: $W = \Sigma \setminus \left(G \cup B \right)$.
+Note that since all allocated memory will either be grey, black, or white, the white memory is the memory that is not grey or black: $W = \Sigma^+ \setminus \left(G \cup B \right)$.
 
 We can represent step 1 as:
 
 $$
-\left\langle \emptyset, \emptyset, \Sigma \right\rangle
+\left\langle \emptyset, \emptyset, \Sigma^+ \right\rangle
 $$
 
 All memory is marked as white.
-For our initial marking (step 2):
+For our initial marking (step 2), we set $G = L_i\left(c\right) \cup L_i\left(\kappa\right)$:
 
 $$
-\left\langle L\left(c \right) \cup L\left(\kappa \right) \right\rangle
+\left\langle L_i\left(c \right) \cup L_i\left(\kappa \right), \emptyset, \Sigma^+ \right\rangle
 $$
 
 Steps 3. through 5. can be represented with a single function mapping:
 
 $$
-\left\langle G, B, \Sigma \right\rangle \mapsto {\left\langle\left(G \cup L\left(\sigma\right)\right)\setminus\left(B \cup \left\{\sigma\right\}\right), B \cup \left\{\sigma\right\}, \Sigma\right\rangle}_{\sigma \in G}
+\left\langle G, B, \Sigma^+ \right\rangle \rightarrow {\left\langle\left(G \cup L_i\left(\sigma\right)\right)\setminus\left(B \cup \left\{\sigma\right\}\right), B \cup \left\{\sigma\right\}, \Sigma^+\right\rangle}_{\sigma \in G}
 $$
 
-A grey object ($\sigma \in G$) is chosen, all memory reachable from the object this is not marked black is colored grey ($G \mapsto \left(G \cup L\left(\sigma\right)\right)\setminus\left(B \cup \left\{\sigma\right\}\right)$), and then the object is colored black ($B \mapsto B \cup \left\{\sigma\right\}$).
+A grey object ($\sigma \in G$) is chosen, all memory reachable from the object this is not marked black is colored grey ($G \rightarrow \left(G \cup L_i\left(\sigma\right)\right)\setminus\left(B \cup \left\{\sigma\right\}\right)$), and then the object is colored black ($B \rightarrow B \cup \left\{\sigma\right\}$).
 
-Eventually, all grey elements will be colored white or black:
+Eventually, all elements will be colored white or black:
 
 $$
-\left\langle \emptyset , B, \Sigma \right\rangle
+\left\langle \emptyset , B, \Sigma^+ \right\rangle
+$$
+
+Now, we have to plug this into our definition of garbage collection.
+Since $B$, the memory we colored black, contains all the memory that is reachable from the current program state, $B$ is the live memory that should be kept post-garbage collection.
+Everything else can be swept away.
+Therefore, when we partition $\Sigma^+$ into $\Sigma$ (the memory we keep) and $\Sigma'$ (the memory we discard), we just need to set $\Sigma = B$.
+
+$$
+\left\langle c, \kappa, \Sigma^+ \right\rangle \rightarrow \left\langle c, \kappa, \Sigma \right\rangle
+$$
+
+Such that:
+
+$$
+\left\langle L_i\left(c \right) \cup L_i\left(\kappa \right), \emptyset, \Sigma^+ \right\rangle \twoheadrightarrow_{gc} \left\langle \emptyset , \Sigma, \Sigma^+ \right\rangle
+$$
+
+Where $gc$ is defined as:
+
+$$
+\left\langle G, B, \Sigma \right\rangle \rightarrow _{gc} {\left\langle\left(G \cup L_i\left(\sigma\right)\right)\setminus\left(B \cup \left\{\sigma\right\}\right), B \cup \left\{\sigma\right\}, \Sigma\right\rangle}_{\sigma \in G}
 $$
 
 And just like that, we have a mathematical model of garbage collection!
+
+### Ok, But Why Do We Care?
+
+Why is this important?
+We talked about proving properties of garbage collection.
+So, let's prove that mark and sweep *actually* satisfies the definition of garbage collection.
+
+Recall that we defined each garbage collection step is defined with:
+
+$$
+\left\langle G, B, \Sigma \right\rangle \rightarrow _{gc} {\left\langle\left(G \cup L_i\left(\sigma\right)\right)\setminus\left(B \cup \left\{\sigma\right\}\right), B \cup \left\{\sigma\right\}, \Sigma\right\rangle}_{\sigma \in G}
+$$
+
+And that the garbage collection *must* satisfy:
+
+$$
+\left(\Sigma^+ \setminus \Sigma\right) \cap \left(L\left(c\right) \cup L\left(\kappa\right)\right) = \emptyset
+$$
+
+How do we prove that our garbage collections satisfy this?
+
+Let's write a proof by contradiction.
+
+We'll start by supposing for the purpose of contradiction that there exists an object $\sigma'$ such that:
+
+$$
+\sigma' \in \left(\Sigma^+ \setminus \Sigma\right) \cap \left(L\left(c\right) \cup L\left(\kappa\right)\right)
+$$
+
+In other words, $\sigma'$ is both in the discarded memory and is reachable by the current program state.
+Big no-no.
+
+Recall that we set $\Sigma = B$ once $G = \emptyset$.
+Therefore, $\sigma' \notin B$.
+
+However, $\sigma' \in \left(L\left(c\right) \cup L\left(\kappa\right)\right)$.
+Therefore, there must exist some $x_1, x_2, \dots x_n$ such that $\sigma' \in L_i\left(x_n\right)$, $x_n \in L_i\left(x_{n-1}\right)$, $\dots$, $x_1 \in \left(L_i\left(c\right) \cup L_i\left(\kappa\right)\right)$.
+As such, there exists a step where $x_1 \in G$.
+Therefore, there exist steps where $x_2 \in G$, $\dots$, $x_n \in G$.
+Therefore, there exists a step when $\sigma' \in G$.
+Since $\forall \sigma \in G$, $\sigma$ is moved into $B$ eventually, $\sigma'$ must be moved into $B$ eventually.
+
+This is a contradiction;
+$\sigma' \in B$ and $\sigma' \notin B$ cannot both be true.
+Therefore, $\not\exists \sigma'$ such that $\sigma' \in \left(\Sigma^+ \setminus \Sigma\right) \cap \left(L\left(c\right) \cup L\left(\kappa\right)\right)$.
+
+Therefore,
+
+$$
+\left(\Sigma^+ \setminus \Sigma\right) \cap \left(L\left(c\right) \cup L\left(\kappa\right)\right) = \emptyset
+$$
+
+And there we go!
+We have proven that our garbage collection function satisfies the definition of garbage collection.
+Mark and sweep, if implemented in such a way that aligns with our mathematical model, will not discard any live memory.
+
+## Tl;dr
+
+What's the takeaway from all this?
+Mathematically modeling programming languages and garbage collection allows us to prove properties of programming languages and garbage collection.
+It also helps describe how a programming language should be implemented.
+This lets us implement safer and more secure programming languages!
+
+This simple example may not look like much but it's actually *very* important.
+Knowing for certain that garbage collection doesn't discard memory that's still reachable is essential.
+Otherwise, we would end up with countless seg faults<label for="sidenote--sn4" class="margin-toggle sidenote-number"> </label><input type="checkbox" id="sidenote--sn4" class="margin-toggle"/><span class="sidenote">
+Essentially, we would risk accessing memory after freeing it over and over again since the garbage collector would be freeing memory that the programmer is still potentially using.
+</span>.
+
+Writing more complex mathematical models allows us to prove more complex and valuable properties of programming languages, allowing programmers to confidently write programs without the fear of needing to debug their programming language.
+
+This was definitely a much more mathematical post than usual, but I hope it was useful!
+[Next time](../240523-semispace-gc/), we'll go return from the world of mathematics and dive deep into semi-space copying garbage collection.

@@ -158,7 +158,7 @@
 
 <p>When choosing a programming language to use for a project—or when implementing one—there are many considerations to keep in mind.
 One of those is whether or not the programming language uses any sort of garbage collection<label for="sidenote--sn1" class="margin-toggle sidenote-number"></label><input type="checkbox" id="sidenote--sn1" class="margin-toggle"/><span class="sidenote">
-Technically, whether or not a language uses garbage collection is more a question for the run system, not the language itself. The same language could theoretically compile to one target that does not use garbage collection and also be interpreted by an interpreter that does perform garbage collection. In practice, this is not common.
+Technically, whether or not a language uses garbage collection is more a question for the run system, not the language itself. The same language could theoretically compile to one target that does not use garbage collection and to another target that does perform garbage collection. In practice, this is not common.
 </span>.
 For many programmers, whether or not a language uses garbage collection is not at the top of their mind when choosing a language to use.
 However, for some projects, this is a critical consideration.
@@ -171,41 +171,82 @@ And can we implement it ourselves?</p>
 Therefore, garbage collection is a form of automatic memory management.
 This is in contrast to manual memory management<label for="sidenote--sn2" class="margin-toggle sidenote-number"></label><input type="checkbox" id="sidenote--sn2" class="margin-toggle"/><span class="sidenote">
 How do you know if your programming language requires manual memory management or if memory is managed automatically? If you're asking this question, memory is being managed automatically. Or you're writing some very bad C code.
-</span></p>
-<h3 id="what-languages-use-garbage-collection">What Languages Use Garbage Collection?</h3>
-<p>Garbage collection is much more common in scripting languages.</p>
+</span>
+Essentially, whenever you allocate memory during program evaluation, that memory needs to be freed somehow.
+In languages where you manually manage memory (like C), you have to manually free the memory.
+For example<label for="sidenote--sn3" class="margin-toggle sidenote-number"></label><input type="checkbox" id="sidenote--sn3" class="margin-toggle"/><span class="sidenote">
+And yes, I am very well aware of the fact that this code is not good C code.
+</span>:</p>
+<pre><code class="language-c">int* my_int = (int*)malloc(sizeof(int));
+my_int = 10;
+printf(&quot;my_int: %d\n&quot;, *my_int);
+...
+free(my_int);
+</code></pre>
+<p>Since we dynamically allocate memory for <code>my_int</code>, we need to free it.</p>
+<p>Now instead consider Python.
+In Python, this code would be:</p>
+<pre><code class="language-python">my_int = 10
+print(f&quot;my_int: {my_int}&quot;)
+</code></pre>
+<p>Here, we don't need to manually free <code>my_int</code>.
+So where does the memory go?
+Does Python just grow to use infinite memory?
+Nope.</p>
+<p>This is where garbage collection comes in.
+Since the run system for Python is garbage collected, a garbage collector comes in and automatically frees memory that is no longer being used.</p>
+<h3 id="what-languages-use-garbage-collection-and-why">What Languages Use Garbage Collection and Why?</h3>
+<p>So by now we know that not all languages use garbage collection.
+So, which ones do use garbage collection?
+Usually, garbage collection is much more commonly used in scripting languages and in languages that dynamically allocate memory more frequently.</p>
+<p>For example, languages that use garbage collection include:</p>
 <ul>
 <li>Python</li>
 <li>JavaScript</li>
 <li>Go</li>
 <li>C#</li>
 </ul>
-<h3 id="what-languages-do-not-use-garbage-collection">What Languages Do NOT Use Garbage Collection?</h3>
-<p>Scripting languages tend to use not use garbage collection and instead rely on manually manipulating and cleaning up memory.</p>
+<p>Why do they use garbage collection?
+The primary reason is that it makes it much easier for the programmer.
+For one, it's simply more convenient for the programmer to not have to manually free memory.
+Programmers can write code and create objects and not have to pepper <code>free</code> statements through their code.</p>
+<p>Going beyond that, however, garbage collection also helps prevent certain types of errors, such as:</p>
+<ul>
+<li><strong>Use after free errors</strong></li>
+<li><strong>Dangling pointers</strong></li>
+<li><strong>Double free bugs</strong></li>
+<li><strong>Memory leaks</strong></li>
+</ul>
+<h3 id="what-languages-do-not-use-garbage-collection-and-why-not">What Languages Do NOT Use Garbage Collection and Why Not?</h3>
+<p>There are some situations when you tend to NOT want to use garbage collection.
+Those situations include cases when you have severe memory limitations, when you need to ensure that program evaluation does not stall for garbage collection, when you need to ensure code runs quickly and efficiently, etc.</p>
+<p>Languages that don't use garbage collection include:</p>
 <ul>
 <li>C</li>
 <li>C++</li>
 <li>Rust</li>
 </ul>
-<h2 id="why-do-some-languages-use-garbage-collection">Why Do Some Languages Use Garbage Collection</h2>
-<ol>
-<li>Simplifies scripting for the end programmer</li>
-<li>Does not require programmers to manually de-allocate memory</li>
-</ol>
-<h2 id="why-do-some-languages-not-use-garbage-collection">Why Do Some Languages NOT Use Garbage Collection</h2>
-<ol>
-<li>Performance hit</li>
-<li>Can stall program execution</li>
-<li>Can have substantial overhead</li>
-</ol>
-<h2 id="how-does-garbage-collection-work-very-broadly">How Does Garbage Collection Work (Very Broadly)</h2>
-<p>Run system checks when objects are no longer able to be used by a program and automatically frees up the memory used.</p>
-<h2 id="strategies-for-garbage-collection">Strategies for Garbage Collection</h2>
+<p>Why don't they use garbage collection?
+Many reasons:</p>
 <ul>
-<li>Tracing</li>
-<li>Reference counting</li>
-<li>Stop and copy</li>
+<li><strong>Memory overhead</strong></li>
+<li><strong>Worse performance</strong></li>
+<li><strong>Unpredictable program stalls</strong></li>
+<li><strong>Lack of control over location of memory allocation</strong></li>
 </ul>
+<h2 id="how-does-garbage-collection-work-very-broadly">How Does Garbage Collection Work (Very Broadly)</h2>
+<p>Very generally, garbage collection works by checking when objects are no longer able to be used by a program and then automatically freeing up that memory.
+There are many different strategies for finding which objects can no longer be used and different strategies for discarding garbage.
+These include:</p>
+<ul>
+<li><strong>Tracing</strong></li>
+<li><strong>Reference counting</strong></li>
+<li><strong>Stop and copy</strong></li>
+</ul>
+<h2 id="tldr">Tl;dr</h2>
+<p>Garbage collection finds which objects are no longer able to be used by the program and automatically frees that garbage.
+It is commonly used in scripting languages since it makes it easier to write programs and avoid certain types of bugs.
+However, it also requires substantial overhead, impacts performance, and can lead to unpredictable program stalling and memory allocation.</p>
 
 
 

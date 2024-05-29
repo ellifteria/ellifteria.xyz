@@ -18,6 +18,30 @@ Here, we'll actually implement the algorithm in code.
 
 ## Cheney's Algorithm in JavaScript
 
+### Givens
+
+Let's assume we already have some data structures defined<label for="sidenote--sn1" class="margin-toggle sidenote-number"></label><input type="checkbox" id="sidenote--sn1" class="margin-toggle"/><span class="sidenote">
+They actually are already defined and can be found [here](https://github.com/ellifteria/cheneys-gc.js).
+</span>.
+First, we have a `Heap` class that provides the following methods:
+
+1. `heapSet(address, value)`: Sets `address` in the heap to `value` if `address` is a valid address.
+2. `heapGet(address)`: Returns the value stored in `address` if it is a valid address.
+3. `heapFill(startAddress, endAddress, value)`: Fills all addresses between `startAddress` (inclusive) and `endAddress` (exclusive) with `value`.
+
+Next, we have a `Collector` class to represent an abstract garbage collector.
+The `Collector` class has the following methods defined:
+
+1. `addRoot(root)`:
+2. `removeRoot(root)`:
+3. `moveRoot(oldRoot, newRoot)`:
+
+And the following methods that all throw `not yet implemented` errors and need to be filled in by a class inheriting from `Collector`:
+
+1. `collectGarbage(root1, root2)`:
+2. `spaceExists(amount)`:
+3. `allocate(data, asRoot = false)`:
+
 ```js
 class TwoSpaceCopyingCollector extends Collector {
     constructor(size) {

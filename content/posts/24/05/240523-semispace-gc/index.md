@@ -64,17 +64,18 @@ Then, program execution continues.
 Why might someone choose to use a two-space copying garbage collection?
 Well, it does have few benefits:
 
-1. **No memory fragmentation.** Unlike strategies like mark and sweep which leave live objects in the same memory locations they were in before garbage collection, two-space copying collection moves all live objects close together, preventing memory fragmentation. In two-space copying collection, live objects post-collection are all at the start of the old To Space/ new From Space.
-2. **Collection time is proportional to the amount of live data.** Two-space copying garbage collection only requires traversing the chains of live objects and live pointers, instead of iterating through all memory.
-3. **Allocation only requires incrementing a pointer.** Allocation only requires storing an object in the next available memory location and then incrementing the pointer storing the location of the next available memory location.
-4. **Collection does not require much state.** Collecting garbage will only require 4 extra garbage collection variables (we'll show this soon).
+1. **No memory fragmentation** Unlike strategies like mark and sweep which leave live objects in the same memory locations they were in before garbage collection, two-space copying collection moves all live objects close together, preventing memory fragmentation. In two-space copying collection, live objects post-collection are all at the start of the old To Space/ new From Space.
+2. **Collection time is proportional to the amount of live data** Two-space copying garbage collection only requires traversing the chains of live objects and live pointers, instead of iterating through all memory.
+3. **Allocation only requires incrementing a pointer** Allocation only requires storing an object in the next available memory location and then incrementing the pointer storing the location of the next available memory location.
+4. **Collection does not require much state** Collecting garbage will only require 4 extra garbage collection variables (we'll show this soon).
 
 ## What are Some of the Drawbacks to Two-Space Copying Garbage Collection
 
 That being said, it does have some downsides:
 
-1. **Only half of the heap is able to be used for storing objects since the other half is needed for collection.** Since we need to have heap space open for copying live objects during collection, we can't use the entire heap to store data. In fact, since theoretically all objects could still be live when collecting garbage, we need the same amount of space available in both the From Space and To Space. So, we can only use half the heap when allocating data.
-2. **Requires the entire program to stop executing to collect garbage.** Like other stop-the-world methods, program execution has to completely stop while garbage is collected.
+1. **Only half of the heap is able to be used for storing objects since the other half is needed for collection** Since we need to have heap space open for copying live objects during collection, we can't use the entire heap to store data. In fact, since theoretically all objects could still be live when collecting garbage, we need the same amount of space available in both the From Space and To Space. So, we can only use half the heap when allocating data.
+2. **Has terrible memory locality** Semi-space garbage collection essentially uses breadth-first search. This means that the garbage collection has terrible virtual memory performance. Why? Objects aren't copied over next to the objects they reference—that would require depth-first search. Therefore, objects are likely to be stored in different pages than the ones that contain the objects it references.
+3. **Requires the entire program to stop executing to collect garbage** Like other stop-the-world methods, program execution has to completely stop while garbage is collected.
 
 ## How Does Two-Space Copying Garbage Collection Work
 
