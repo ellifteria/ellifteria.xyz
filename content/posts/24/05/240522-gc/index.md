@@ -1,6 +1,6 @@
 ---
 title: Garbage Collection, Broadly
-summary: Basic Introduction to Garbage Collection
+summary: An Introduction to Garbage Collection
 template: page
 path:
     -   name: Posts
