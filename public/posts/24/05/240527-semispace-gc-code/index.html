@@ -163,9 +163,9 @@
 <p><a href="../240523-semispace-gc">Last time</a>, we covered how semi-space garbage collection works using Cheney's algorithm.
 Let's finally write some code!</p>
 <h2 id="cheneys-algorithm-in-javascript">Cheney's Algorithm in JavaScript</h2>
-<h3 id="givens">Givens</h3>
+<h3 id="provided-classes-and-functions">Provided Classes and Functions</h3>
 <p>To make life easier for ourselves, let's assume we already have some classes defined<label for="sidenote--sn1" class="margin-toggle sidenote-number"></label><input type="checkbox" id="sidenote--sn1" class="margin-toggle"/><span class="sidenote">
-They actually are already defined and can be found <a href="https://github.com/ellifteria/cheneys-gc.js">here</a>.
+They actually are already defined and can be found <a href="https://github.com/ellifteria/cheneys-gc.js/blob/main/GCLib.js">here</a>.
 </span> defined.
 First, we have a <code>Heap</code> class that provides the following methods:</p>
 <ol>
@@ -174,14 +174,66 @@ First, we have a <code>Heap</code> class that provides the following methods:</p
 <li><code>heapFill(startAddress, endAddress, value)</code>: Fills all addresses between <code>startAddress</code> (inclusive) and <code>endAddress</code> (exclusive) with <code>value</code>.</li>
 </ol>
 <p>Next, we have a <code>Collector</code> class to represent an abstract garbage collector.
-The <code>Collector</code> class has the following methods that all throw <code>not yet implemented</code> errors and need to be filled in by a class inheriting from <code>Collector</code><label for="sidenote--sn2" class="margin-toggle sidenote-number"></label><input type="checkbox" id="sidenote--sn2" class="margin-toggle"/><span class="sidenote">
-The <code>Collector</code> class also includes <code>addRoot(root)</code>, <code>removeRoot(root)</code>, and <code>moveRoot(oldRoot, newRoot)</code> methods that do have definitions; however, we won't use them here.
-</span>:</p>
+The <code>Collector</code> class has the following methods that all throw <code>not yet implemented</code> errors and need to be filled in by a class inheriting from <code>Collector</code></p>
 <ol>
 <li><code>collectGarbage(root1, root2)</code>: This is the method we'll call to actually collect garbage.</li>
 <li><code>spaceExists(amount)</code>: This method should check if there's any space left in the heap or if we need to collect garbage.</li>
-<li><code>allocate(data, asRoot = false)</code>: Here is where we'll allocate memory—we won't fill this one in in this post.</li>
+<li><code>allocate(data, asRoot = false)</code>: Here is where we'll allocate memory.</li>
 </ol>
+<p>It also contains the following methods that do have definitions:<label for="sidenote--sn2" class="margin-toggle sidenote-number"></label><input type="checkbox" id="sidenote--sn2" class="margin-toggle"/><span class="sidenote">
+In our collector, we will be manually adding and removing roots. This is a very simplified way of thinking about program roots and is NOT how you would want to implement it in an actual programming language. We just do this here for simplicity's sake.
+</span>:</p>
+<ol>
+<li><code>addRoot(root)</code>: Adds a new root to the collector's current root set.</li>
+<li><code>removeRoot(root)</code>: Removes a root from the collector's root set</li>
+<li><code>moveRoot(oldRoot, newRoot)</code>: Removes a root from the collector's root set and adds the new root.</li>
+</ol>
+<p>The <code>Collector</code> class also has a <code>constructor</code> that instantiates the root set.</p>
+<p>Lastly, we have a function defined for integer division: <code>integerDivision(a, b)</code> which returns <span class="math inline">\(\left\lfloor \frac{a}{b} \right\rfloor\)</span>.</p>
+<p>And with all of these, we're ready to start implementing Cheney's algorithm!</p>
+<h3 id="instantiating-the-collector">Instantiating the Collector</h3>
+<p>Let's start with the simplest part of the code:
+instantiating the garbage collector.</p>
+<p>Here, we have a couple of tasks.
+We need to</p>
+<ol>
+<li>Create a <code>Heap</code> of memory</li>
+<li>Set up any variables we need to allocate memory and collect garbage</li>
+</ol>
+<p>The first part is relatively simple and just relies on calling <code>new Heap(size)</code>.
+This means that we need to get a size of our heap from whomever is instantiating the collector.
+And if that's the case, we need to validate that the given <code>size</code> is a legal value.</p>
+<p>That brings up our first question:
+what sizes can we NOT have for our garbage collector?</p>
+<p>To answer that, we need to think about how much memory our collector will 100% absolutely need.
+Since we need to be able to allocate <em>some</em> memory, we can first say that <code>size</code> has to be greater than or equal to 1.
+However, we also need to be able to copy memory from the From Space to the To Space.
+As noted <a href="../240523-semispace-gc/">earlier</a>, we need to have the same amount of space in the From Space and the To Space, so now we need <code>size</code> to be at least 2.</p>
+<p>Pause for a second here to think.
+Is there any more memory we need?</p>
+<p>Yes, there is.
+In our last post, we mentioned that we needed to keep track of two pointers we called the <code>free</code> and the <code>scan</code> pointers.
+These kept track of where we were in memory when collecting garbage.
+We'll also keep track of two more pointers: one to the start of the To Space and one to the start of the From Space.
+This brings us up to four pointers.
+Since we also needed to have room for at least one thing in both the To Space and the From Space, we'll add <span class="math inline">\(4 + 2 = 6\)</span> and say that we need <code>size</code> to be at least 6<label for="sidenote--sn3" class="margin-toggle sidenote-number"></label><input type="checkbox" id="sidenote--sn3" class="margin-toggle"/><span class="sidenote">
+For reasons that will become obvious later, 6 is actually too small to be able to allocate anything. This is because we'll need at least 2 address available for every piece of memory to store the object and the type of the object. You could choose to make <code>size</code> at least 8 if you want. We just absolutely need it to be at least 6 so we have separate addresses for the start of the To Space and the From Space.
+</span>.</p>
+<p>So, the first thing we should do is to check that <code>size</code> is valid and then instantiate our heap<label for="sidenote--sn4" class="margin-toggle sidenote-number"></label><input type="checkbox" id="sidenote--sn4" class="margin-toggle"/><span class="sidenote">
+(after calling the <code>super</code> constructor, of course)
+</span>!</p>
+<pre><code class="language-js">constructor(size) {
+    super();
+
+    if (!isInteger(size) || size &lt;= 6) {
+        console.error(`new Collector: illegal size: ${size}`);
+        return null;
+    }
+
+    this.heap = new Heap(size);
+
+    ...
+</code></pre>
 <pre><code class="language-js">class TwoSpaceCopyingCollector extends Collector {
     constructor(size) {
         super();
@@ -191,11 +243,10 @@ The <code>Collector</code> class also includes <code>addRoot(root)</code>, <code
             return null;
         }
 
-        this.size = size
-        this.heap = new Heap(this.size);
+        this.heap = new Heap(size);
         let fromPointer = 4;
         let toPointer = integerDivision(size - 4, 2) + 4;
-        this.heap.heapFill(0, this.size, &quot;free&quot;);
+        this.heap.heapFill(0, size, &quot;free&quot;);
         this.heap.heapSet(0, fromPointer);
         this.heap.heapSet(1, toPointer);
         this.heap.heapSet(2, fromPointer);
@@ -228,7 +279,7 @@ The <code>Collector</code> class also includes <code>addRoot(root)</code>, <code
                 return null;
         }
         return freePointer;
-    };
+    }
     
     collectGarbageStep() {
         let scanPointer = this.heap.heapGet(2);
@@ -254,17 +305,21 @@ The <code>Collector</code> class also includes <code>addRoot(root)</code>, <code
         
         let newRoot1 = false;
         let newRoot2 = false;
+
+        let newRoots = new Set();
         
         if (root1 != false) {
             newRoot1 = this.copyFrom(root1);
             this.moveRoot(root1, newRoot1);
+            newRoots.add(root1);
         }
         if (root2 != false) {
             newRoot2 = this.copyFrom(root2);
             this.moveRoot(root2, newRoot2);
+            newRoots.add(root2);
         }
 
-        let currentRoots = this.roots.values().toArray();
+        let currentRoots = this.roots.difference(newRoots).values().toArray();
         for (const root of currentRoots) {
             let newRoot = this.copyFrom(root);
             this.moveRoot(root, newRoot);
@@ -277,24 +332,25 @@ The <code>Collector</code> class also includes <code>addRoot(root)</code>, <code
         this.cleanUpCollection();
         
         return [newRoot1, newRoot2];
-    };
+    }
     
     cleanUpCollection() {
         let oldFromPointer = this.heap.heapGet(0);
         let oldToPointer = this.heap.heapGet(1);
         
-        let endOfMemory = integerDivision(this.size - 4, 2) + oldFromPointer;
-        this.heap.heapFill(oldFromPointer, endOfMemory, &quot;free&quot;);
+        let availableAllocationSpace = Math.abs(oldToPointer - oldFromPointer);
+
+        this.heap.heapFill(oldFromPointer, oldFromPointer + availableAllocationSpace, &quot;free&quot;);
         
         this.heap.heapSet(0, oldToPointer);
         this.heap.heapSet(1, oldFromPointer);
         
         if (oldToPointer &gt;= oldFromPointer) {
-            this.heap.heapSet(3, this.size);
+            this.heap.heapSet(3, (oldFromPointer - 4) * 2 + 4);
         } else {
             this.heap.heapSet(3, oldFromPointer);
         }
-    };
+    }
     
     spaceExists(amount) {
         return this.heap.heapGet(3) &gt;= (this.heap.heapGet(2) + amount);
@@ -360,7 +416,7 @@ The <code>Collector</code> class also includes <code>addRoot(root)</code>, <code
         }
 
         return allocationPointer;
-    };
+    }
 }
 </code></pre>
 

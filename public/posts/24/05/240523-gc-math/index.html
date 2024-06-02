@@ -328,8 +328,25 @@ Essentially, we would risk accessing memory after freeing it over and over again
 </span>.</p>
 <p>Writing more complex mathematical models allows us to prove more complex and valuable properties of programming languages, allowing programmers to confidently write programs without the fear of needing to debug their programming language.</p>
 <p>This was definitely a much more mathematical post than usual, but I hope it was useful!
-<a href="../240523-semispace-gc/">Next time</a>, we'll go return from the world of mathematics and dive deep into semi-space copying garbage collection.</p>
+<a href="../240523-semispace-gc/">Next time</a>, we'll return from the world of mathematics and dive deep into semi-space copying garbage collection.</p>
+<!-- $$
+\left\langle G , B , \Sigma_F , \Sigma_T \right\rangle
+$$
 
+$$
+\left\langle L_i(c) \cup L_i(\kappa) , \emptyset , \Sigma_F , \emptyset \right\rangle
+$$
+
+$$
+\left\langle G , B , \Sigma_F , \emptyset \right\rangle \rightarrow \left\langle \left(G \cup L_i\left(\sigma\right)\right)\setminus\left(B \cup \left\{\sigma\right\}\right) , B \cup \left\{\sigma\right\} , \Sigma_F , \emptyset \right\rangle \twoheadrightarrow \left\langle \emptyset , B , \Sigma_F , \emptyset \right\rangle
+$$ 
+$$
+\left\langle \emptyset , B , \Sigma_F , \Sigma_T \right\rangle \rightarrow \left\langle \emptyset , B \setminus \left(\sigma\right) , \Sigma_F , \Sigma_T \cup \left(\sigma\right) \right\rangle \twoheadrightarrow \left\langle \emptyset , \emptyset , \Sigma_F , \Sigma_T \right\rangle
+$$
+
+$$
+\left\langle \emptyset , \emptyset , \Sigma_F , \Sigma_T \right\rangle \rightarrow \left\langle \emptyset , \emptyset , \emptyset , \Sigma_T \right\rangle \rightarrow \left\langle \emptyset , \emptyset , \Sigma_T , \emptyset \right\rangle
+$$ -->
 
 
 
