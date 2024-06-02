@@ -46,7 +46,7 @@ In our collector, we will be manually adding and removing roots. This is a very 
 
 The `Collector` class also has a `constructor` that instantiates the root set.
 
-Lastly, we have a function defined for integer division: `integerDivision(a, b)` which returns $\left\lfloor \frac{a}{b} \right\rfloor$.
+Lastly, we have functions defined for integer division and checking if a value is an integer: `integerDivision(a, b)` which returns $\left\lfloor \frac{a}{b} \right\rfloor$ and `isInteger(maybeInteger)` which returns whether or not `maybeInteger` is an integer.
 
 And with all of these, we're ready to start implementing Cheney's algorithm!
 
