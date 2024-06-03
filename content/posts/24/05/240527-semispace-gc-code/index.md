@@ -99,8 +99,90 @@ constructor(size) {
     }
 
     this.heap = new Heap(size);
+    this.heap.healFill(0, size, "free"); // fill heap with empty memory
 
     ...
+```
+
+Ok, what's next?
+We need to instantiate our four pointers.
+First, we need to figure out where our From Space and To Space start.
+The space available for memory is all the space after our pointers.
+So we have $size - 4$ addresses available which means each the From Space and the To Space get $\frac{size - 4}{2}$ addresses.
+We'll have the From Space start directly after the To Space: address 4.
+That means that the To Space starts at $4 + \frac{size - 4}{2}$, right?
+Yes...
+...unless we have an odd size.
+In that case, if we divided the space evenly, one of the From and the To Space will be "smaller" than the other.
+However, we know that won't work.
+So, what should we do?
+
+The solution:
+ignore the single address that's making the size of the heap odd.
+How do we do this mathematically?
+Give the From Space and the To Space each $\left\lfloor\frac{size - 4}{2}\right\rfloor$ addresses.
+So, we start the To Space at $4 + \left\lfloor\frac{size - 4}{2}\right\rfloor$.
+Since later we'll calculate the size of the To Space based on the size of the From Space, this means that the To Space will also have $\left\lfloor\frac{size - 4}{2}\right\rfloor$ addresses.
+
+```js
+constructor(size) {
+    ...
+
+    let fromPointer = 4;
+    let toPointer = integerDivision(size - 4, 2) + 4;
+
+    ...
+```
+
+We need to store the values of these pointers in our heap so we can access them later.
+We'll store them in this order:
+
+1. Pointer to the start of the From Space
+2. Pointer to the start of the To Space
+3. Allocation pointer (when not collecting garbage)/scan pointer (when collecting garbage)
+4. MaxAllocation pointe (when not collecting garbage)/free pointer (when collecting garbage)
+
+We need to initialize these to:
+
+1. the pointer to the start of the From Space
+2. the pointer to the start of the To Space
+3. the pointer to the start of the From Space
+4. the pointer to the start of the To Space
+
+```js
+constructor(size) {
+    ...
+
+    this.heap.heapSet(0, fromPointer);
+    this.heap.heapSet(1, toPointer);
+    this.heap.heapSet(2, fromPointer);
+    this.heap.heapSet(3, toPointer);
+}
+```
+
+This completes our constructor!
+
+```js
+constructor(size) {
+    super();
+
+    if (!isInteger(size) || size <= 6) {
+        console.error(`new Collector: illegal size: ${size}`);
+        return null;
+    }
+
+    this.heap = new Heap(size);
+    this.heap.heapFill(0, size, "free");
+
+    let fromPointer = 4;
+    let toPointer = integerDivision(size - 4, 2) + 4;
+    
+    this.heap.heapSet(0, fromPointer);
+    this.heap.heapSet(1, toPointer);
+    this.heap.heapSet(2, fromPointer);
+    this.heap.heapSet(3, toPointer);
+
+}
 ```
 
 ```js
