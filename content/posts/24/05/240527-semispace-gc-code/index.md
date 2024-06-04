@@ -16,10 +16,18 @@ series:
 [Last time](../240523-semispace-gc), we covered how semi-space garbage collection works using Cheney's algorithm.
 Let's finally write some code!
 
+***NOTE:*** This post builds upon the [last one](../240523-semispace-gc/).
+You'll need to read the previous post to be able to understand some of the terminology used in this one.
+If you haven't read it yet, go check it out and then come back.
+It'll still be here, I promise<label for="sidenote--sn0" class="margin-toggle sidenote-number"></label><input type="checkbox" id="sidenote--sn" class="margin-toggle"/><span class="sidenote">
+Unless something catastrophic happens or I lose this domain.
+</span>
+
 ## Cheney's Algorithm in JavaScript
 
 ### Provided Classes and Functions
 
+Let's get some boring helper functions out of the way.
 To make life easier for ourselves, let's assume we already have some classes defined<label for="sidenote--sn1" class="margin-toggle sidenote-number"></label><input type="checkbox" id="sidenote--sn1" class="margin-toggle"/><span class="sidenote">
 They actually are already defined and can be found [here](https://github.com/ellifteria/cheneys-gc.js/blob/main/GCLib.js).
 </span> defined.
@@ -48,7 +56,52 @@ The `Collector` class also has a `constructor` that instantiates the root set.
 
 Lastly, we have functions defined for integer division and checking if a value is an integer: `integerDivision(a, b)` which returns $\left\lfloor \frac{a}{b} \right\rfloor$ and `isInteger(maybeInteger)` which returns whether or not `maybeInteger` is an integer.
 
-And with all of these, we're ready to start implementing Cheney's algorithm!
+While I'm sure you could write more helper functions, these provide all the abstractions we need to start implementing Cheney's algorithm.
+
+### Memory Layout
+
+Before we start implementing garbage collection, we need to know how memory is being stored in the first place.
+For ease and for better memory locality, we'll make both the From Space and the To Space two continuous chunks of memory.
+Then, we'll set aside a small amount of memory for storing any pointers we need.
+
+More importantly, we need to figure out how we store each individual object in memory.
+And for that, we need to figure out exactly what types of objects we'll be storing.
+
+To make things easy for ourselves, we'll only store two different types of objects (just like in the previous post):
+
+1. Flat values, which will be a single integer
+2. Pairs of two different pointers
+
+And just like in the previous post, since each of these types of objects has a different size, we need to annotate each object with their type so our garbage collector knows how to treat them.
+So, just like last time, we'll store each object in multiple addresses.
+In the first, we'll store the type of the object.
+And the value—or values—of the object will be stored in addresses directly after it.
+
+So the integer 10 would be stored in memory with two addresses as:
+
+| Address Offset | Value |
+|:---:|:---:|
+| `0` | `flat` |
+| `1` | `10` |
+
+And a pair with pointers to addresses `12` and `18` would be stored in memory with three addresses as:
+
+| Address Offset | Value |
+|:---:|:---:|
+| `0` | `cons` |
+| `1` | `12` |
+| `2` | `18` |
+
+We actually have one more type of object that can be stored in memory, but it's not one that users are able to define.
+We'll need to store our forwarding pointers in memory too.
+Since these are just a single pointer value, we'll again store them in two memory addresses as:
+
+| Address Offset | Value |
+|:---:|:---:|
+| `0` | `forward` |
+| `1` | address |
+
+And now, we're finally ready to start implementing Cheney's algorithm!
 
 ### Instantiating the Collector
 
@@ -135,7 +188,7 @@ constructor(size) {
 ```
 
 We need to store the values of these pointers in our heap so we can access them later.
-We'll store them in this order:
+We'll store them in this order (at addresses 0–3 in our heap):
 
 1. Pointer to the start of the From Space
 2. Pointer to the start of the To Space
@@ -181,8 +234,262 @@ constructor(size) {
     this.heap.heapSet(1, toPointer);
     this.heap.heapSet(2, fromPointer);
     this.heap.heapSet(3, toPointer);
-
 }
+```
+
+### Copying from the From Space to the To Space
+
+Now we can move on to writing the garbage collection algorithm.
+As a reminder, an very very very high-level outline of the steps we need to take is:
+
+1. Iterate through roots and copy them from the From Space into the To Space
+2. Iterate through memory in the To Space, copying memory referenced by each object from the From Space into the To Space
+
+Both of those involve copying memory from the From Space to the To Space, so let's go ahead and write a method for that.
+
+There are a few steps that our `copyFrom(pointer)` function will need to complete:
+
+1. Figure out what object is being stored at `pointer`
+2. Move that memory into the first available address in the To Space
+3. Leave a forwarding pointer where the object used to be in the From Space that points to the address we just moved to object to in the To Space
+4. Update the first available address in the To Space
+5. Return the new address of the object (i.e., the location we just moved it to in the To Space)
+
+Getting started with our function, we'll need the address of the first available space in the To Space to be able to copy memory into it.
+Fortunately, we have that value saved in our `free` pointer stored at address 3 in our heap.
+
+```js
+...
+copyFrom(pointer) {
+    let freePointer = this.heap.heapGet(3);
+    ...
+```
+
+Next, we need to figure out what type of object we're copying from the From Space.
+As we mentioned earlier, we have the type of the object stored at the first address an object takes up.
+We'll call this the object's `tag`.
+The `tag` can take one of three values:
+
+1. `flat`
+2. `cons`
+3. `forward`
+
+We'll need to handle each differently.
+
+```js
+...
+copyFrom(pointer) {
+    ...
+    let tag = this.heap.heapGet(pointer);
+    switch(tag) {
+        case "forward":
+            //handle forwarding pointer
+        case "flat":
+            // handle flat value
+        case "cons":
+            // handle pair of pointers
+        default:
+                console.error(`Collector.copyFrom: unknown tag: ${this.heap.heapGet(pointer)}`);
+                return null;
+    }
+    ...
+```
+
+Forwarding pointers are the easiest of the three, so we'll start there.
+Unlike with `flat`s and `cons`es, `forward`ing pointers don't require us to copy over anything into the To Space.
+They also don't require that we leave a `forward`ing pointer in their place because, well, they're already a `forward`ing pointer.
+Looking at the steps we laid out, this means that all we have to do is step 5. "Return the new address of the object."
+Fortunately, this is easy.
+The new address of the object is just the address that the `forward`ing pointer points to—we just need to return that.
+
+```js
+...
+copyFrom(pointer) {
+    ...
+    let tag = this.heap.heapGet(pointer);
+    switch(tag) {
+        case "forward":
+            return this.heap.heapGet(pointer + 1);
+        case "flat":
+            // handle flat value
+        case "cons":
+            // handle pair of pointers
+        default:
+                console.error(`Collector.copyFrom: unknown tag: ${this.heap.heapGet(pointer)}`);
+                return null;
+    }
+    ...
+```
+
+The second easiest to handle are `flat`s since they only have one value to copy over.
+However, like `cons`es and unlike `forward`ing pointers, `flat`s do require that we actually copy the object over from the From Space to the To Space and leave a `forward`ing pointer.
+So, let's do just that.
+Copying over the value from the From Space to the To Space is relatively easy:
+
+```js
+...
+copyFrom(pointer) {
+    ...
+    let tag = this.heap.heapGet(pointer);
+    switch(tag) {
+        case "forward":
+            return this.heap.heapGet(pointer + 1);
+        case "flat":
+            this.heap.heapSet(freePointer, "flat"); // set the next available address in the To Space to the tag `flat`
+            this.heap.heapSet(freePointer + 1, this.heap.heapGet(pointer + 1)); // set the next available address after that to the value of this flat
+            ...
+        case "cons":
+            // handle pair of pointers
+        default:
+                console.error(`Collector.copyFrom: unknown tag: ${this.heap.heapGet(pointer)}`);
+                return null;
+    }
+    ...
+```
+
+After that, we need to leave a `forward`ing pointer in the place of the object in the From Space so that other objects that reference it can still locate it:
+
+```js
+...
+copyFrom(pointer) {
+    ...
+    let tag = this.heap.heapGet(pointer);
+    switch(tag) {
+        case "forward":
+            return this.heap.heapGet(pointer + 1);
+        case "flat":
+            this.heap.heapSet(freePointer, "flat");
+            this.heap.heapSet(freePointer + 1, this.heap.heapGet(pointer + 1));
+            this.heap.heapSet(pointer, "forward");
+            this.heap.heapSet(pointer + 1, freePointer); // the new address of the object is stored in the `free` pointer
+            ...
+        case "cons":
+            // handle pair of pointers
+        default:
+                console.error(`Collector.copyFrom: unknown tag: ${this.heap.heapGet(pointer)}`);
+                return null;
+    }
+    ...
+```
+
+Lastly, we need to update the `free` pointer.
+Since `flat`s take up 2 spaces in memory, we just need to increment it by 2:
+
+```js
+...
+copyFrom(pointer) {
+    ...
+    let tag = this.heap.heapGet(pointer);
+    switch(tag) {
+        case "forward":
+            return this.heap.heapGet(pointer + 1);
+        case "flat":
+            this.heap.heapSet(freePointer, "flat");
+            this.heap.heapSet(freePointer + 1, this.heap.heapGet(pointer + 1));
+            this.heap.heapSet(pointer, "forward");
+            this.heap.heapSet(pointer + 1, freePointer);
+            this.heap.heapSet(3, freePointer + 2);
+            break;
+        case "cons":
+            // handle pair of pointers
+        default:
+                console.error(`Collector.copyFrom: unknown tag: ${this.heap.heapGet(pointer)}`);
+                return null;
+    }
+    ...
+```
+
+And now we're done with handling `flat`s!
+Fortunately, handling `cons`es is the exact same idea.
+All we have to do differently is copy two values—since there are two pointers in a `cons`—and increment the `free` pointer by 3 instead of by 2:
+
+```js
+...
+copyFrom(pointer) {
+    ...
+    let tag = this.heap.heapGet(pointer);
+    switch(tag) {
+        case "forward":
+            return this.heap.heapGet(pointer + 1);
+        case "flat":
+            this.heap.heapSet(freePointer, "flat");
+            this.heap.heapSet(freePointer + 1, this.heap.heapGet(pointer + 1));
+            this.heap.heapSet(pointer, "forward");
+            this.heap.heapSet(pointer + 1, freePointer);
+            this.heap.heapSet(3, freePointer + 2);
+            break;
+        case "cons":
+            this.heap.heapSet(freePointer, "cons");
+            this.heap.heapSet(freePointer + 1, this.heap.heapGet(pointer + 1));
+            this.heap.heapSet(freePointer + 2, this.heap.heapGet(pointer + 2));
+            this.heap.heapSet(pointer, "forward");
+            this.heap.heapSet(pointer + 1, freePointer);
+            this.heap.heapSet(3, freePointer + 3);
+            break;
+        default:
+                console.error(`Collector.copyFrom: unknown tag: ${this.heap.heapGet(pointer)}`);
+                return null;
+    }
+    ...
+```
+
+To finish up this function, we just need to return the new address of the object.
+
+```js
+...
+copyFrom(pointer) {
+    let freePointer = this.heap.heapGet(3);
+    let tag = this.heap.heapGet(pointer);
+    switch(tag) {
+        case "forward":
+            return this.heap.heapGet(pointer + 1);
+        case "flat":
+            this.heap.heapSet(freePointer, "flat");
+            this.heap.heapSet(freePointer + 1, this.heap.heapGet(pointer + 1));
+            this.heap.heapSet(pointer, "forward");
+            this.heap.heapSet(pointer + 1, freePointer);
+            this.heap.heapSet(3, freePointer + 2);
+            break;
+        case "cons":
+            this.heap.heapSet(freePointer, "cons");
+            this.heap.heapSet(freePointer + 1, this.heap.heapGet(pointer + 1));
+            this.heap.heapSet(freePointer + 2, this.heap.heapGet(pointer + 2));
+            this.heap.heapSet(pointer, "forward");
+            this.heap.heapSet(pointer + 1, freePointer);
+            this.heap.heapSet(3, freePointer + 3);
+            break;
+        default:
+            console.error(`Collector.copyFrom: unknown tag: ${this.heap.heapGet(pointer)}`);
+            return null;
+    }
+    return freePointer;
+}
+...
+```
+
+### Actually Collecting Garbage
+
+Now that we have a function to copy memory from the From Space into the To Space, let's start collecting garbage.
+This garbage collection function will do the following:
+
+1. Iterate through the roots of the current state of the program in order. For each:
+    1. Copy the root from the From Space into the first available space in the To Space.
+    2. Replace the memory location in the From Space originally inhabited by the root with a forwarding pointer pointing to its new location in the To Space.
+2. Iterate through the objects in the To Space in order. For each, call a function that will handle whatever object we comes across.
+3. Clean up the aftermath of garbage collection.
+
+How do we start?
+Remember earlier when we described the four pointers we were storing in our heap?
+Two of those were serving two different purposes when we're allocating data and when we're collecting garbage.
+So we should start by initializing those pointers to their garbage collection versions.
+This means setting both the `free` and `scan` pointers to the start of the To Space, which we also have stored as a pointer:
+
+```js
+...
+collectGarbage(root1, root2) {
+    this.heap.heapSet(2, this.heap.heapGet(1));
+    this.heap.heapSet(3, this.heap.heapGet(1));
+    ...
 ```
 
 ```js
