@@ -178,7 +178,7 @@ ignore the single address that's making the size of the heap odd.
 How do we do this mathematically?
 Give the From Space and the To Space each $\left\lfloor\frac{size - 4}{2}\right\rfloor$ addresses.
 So, we start the To Space at $4 + \left\lfloor\frac{size - 4}{2}\right\rfloor$.
-Since later we'll calculate the size of the To Space based on the size of the From Space, this means that the To Space will also have $\left\lfloor\frac{size - 4}{2}\right\rfloor$ addresses.
+Since later we'll calculate the size of the To Space based on the size of the From Space, this means that the To Space will also have $\left\lfloor\frac{size - 4}{2}\right\rfloor$ addresses, effectively pretending the very last address doesn't exist.
 
 ```js
 constructor(size) {
