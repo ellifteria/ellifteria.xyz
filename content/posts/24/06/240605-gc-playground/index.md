@@ -1,6 +1,6 @@
 ---
 title: Cheney's Algorithm Playground
-summary: The Garbage Collector We Wrote; Running in the Browser
+summary: The Garbage Collector We Wrote, Running in the Browser
 template: page
 path:
     -   name: Posts

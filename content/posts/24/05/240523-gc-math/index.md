@@ -264,6 +264,12 @@ Writing more complex mathematical models allows us to prove more complex and val
 This was definitely a much more mathematical post than usual, but I hope it was useful!
 [Next time](../240523-semispace-gc/), we'll return from the world of mathematics and dive deep into semi-space copying garbage collection.
 
+### References and Further Reading
+
+- Dimoulas, C., Findler, R., St. Amour, V., Northwestern University COMP_SCI 321 Programming Languages Lecture Material: [Garbage Collection Basics](https://users.cs.northwestern.edu/~stamourv/teaching/321-S19/12-gc-intro.pdf), [Mark and Sweep Garbage Collection](https://users.cs.northwestern.edu/~stamourv/teaching/321-S19/13-14-gc-mark-and-sweep.pdf), [Copying Garbage Collection](https://users.cs.northwestern.edu/~stamourv/teaching/321-S19/15a-gc-copying.pdf)
+- Felleisen, M., Findler, R., Flatt, M., [Semantics Engineering with PLT Redex](https://mitpress.mit.edu/9780262062756/semantics-engineering-with-plt-redex/)
+- [PlT Redex](https://redex.racket-lang.org)
+
 <!-- $$
 \left\langle G , B , \Sigma_F , \Sigma_T \right\rangle
 $$

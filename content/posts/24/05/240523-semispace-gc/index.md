@@ -317,3 +317,15 @@ We've collected all the live data and just need to empty out the old From Space.
 
 Two-space copying garbage collection is as simple as that!
 We'll get to actually writing code [next time](../240527-semispace-gc-code/).
+
+## Tl;dr
+
+Two-Space Garbage Collection is a garbage collection strategy that involves copying live from one half of the heap to the other, discarding all dead memory left behind in the first half.
+The strategy has some valuable benefits, such as no memory fragmentation, collection time being proportional to the amount of live data, allocation only requiring incrementing a pointer, and collection not requiring much state.
+However, there are also some important downsides to consider, including only half of the heap being able to be used for storing objects since the other half is needed for collection, having terrible memory locality, and requiring the entire program to stop executing to collect garbage.
+
+### References and Further Reading
+
+- Dimoulas, C., Findler, R., St. Amour, V., Northwestern University COMP_SCI 321 Programming Languages Lecture Material: [Garbage Collection Basics](https://users.cs.northwestern.edu/~stamourv/teaching/321-S19/12-gc-intro.pdf), [Mark and Sweep Garbage Collection](https://users.cs.northwestern.edu/~stamourv/teaching/321-S19/13-14-gc-mark-and-sweep.pdf), [Copying Garbage Collection](https://users.cs.northwestern.edu/~stamourv/teaching/321-S19/15a-gc-copying.pdf)
+- Drakos, N., Moore, R., [CSE 5317/4305: Design and Construction of Compilers](https://lambda.uta.edu/cse5317/notes/node49.html) Section [13.2.2 Copying Garbage Collection](https://lambda.uta.edu/cse5317/notes/node48.html)
+- Wilson, Paul R., [Uniprocessor Garbage Collection Techniques](https://3e8.org/pub/pdf-t1/gcsurvey.pdf)

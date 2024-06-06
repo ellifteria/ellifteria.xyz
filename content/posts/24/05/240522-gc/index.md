@@ -122,3 +122,9 @@ These include:
 Garbage collection finds which objects are no longer able to be used by the program and automatically frees that garbage.
 It is commonly used in scripting languages since it makes it easier to write programs and avoid certain types of bugs.
 However, it also requires substantial overhead, impacts performance, and can lead to unpredictable program stalling and memory allocation.
+
+### References and Further Reading
+
+- Dimoulas, C., Findler, R., St. Amour, V., Northwestern University COMP_SCI 321 Programming Languages Lecture Material: [Garbage Collection Basics](https://users.cs.northwestern.edu/~stamourv/teaching/321-S19/12-gc-intro.pdf), [Mark and Sweep Garbage Collection](https://users.cs.northwestern.edu/~stamourv/teaching/321-S19/13-14-gc-mark-and-sweep.pdf), [Copying Garbage Collection](https://users.cs.northwestern.edu/~stamourv/teaching/321-S19/15a-gc-copying.pdf)
+- Drakos, N., Moore, R., [CSE 5317/4305: Design and Construction of Compilers](https://lambda.uta.edu/cse5317/notes/node49.html) Section [13.2.2 Copying Garbage Collection](https://lambda.uta.edu/cse5317/notes/node48.html)
+- Wilson, Paul R., [Uniprocessor Garbage Collection Techniques](https://3e8.org/pub/pdf-t1/gcsurvey.pdf)

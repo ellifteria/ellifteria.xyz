@@ -12,7 +12,7 @@ postSections:
             -   name: Cheney's Algorithm Playground
                 link: 24/06/240605-gc-playground
                 date: 05 Jun 2024
-                summary: The Garbage Collector We Wrote; Running in the Browser
+                summary: The Garbage Collector We Wrote, Running in the Browser
                 series:
                     name: Garbage Collection
                     link: /posts/series/gc
