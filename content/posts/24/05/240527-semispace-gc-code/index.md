@@ -53,6 +53,9 @@ In our collector, we will be manually adding and removing roots. This is a very 
 3. `moveRoot(oldRoot, newRoot)`: Removes a root from the collector's root set and adds the new root.
 
 The `Collector` class also has a `constructor` that instantiates the root set.
+It's important to note that this root set contains the roots of the program at a given time.
+Essentially, to simplify things so we can focus just on Cheney's algorithm here, we will just look at this set to determine what the roots of program are at it's current state.
+As mentioned, this is a dramatic oversimplification, but it serves our purposes well enough.
 
 Lastly, we have functions defined for integer division and checking if a value is an integer: `integerDivision(a, b)` which returns $\left\lfloor \frac{a}{b} \right\rfloor$ and `isInteger(maybeInteger)` which returns whether or not `maybeInteger` is an integer.
 
@@ -492,189 +495,416 @@ collectGarbage(root1, root2) {
     ...
 ```
 
+Ok, pause here for a moment.
+Look at that function header I wrote: `collectGarbage(root1, root2)`.
+Why did I specifically choose to provide two roots as arguments to the function?
+Hint: it has to do with the types that we're storing.
+
+Earlier, we specified that we have two types available to users: `flat`s and `cons`es.
+We also defined `flat`s as single integers that reference nothing and `cons`es as pairs that reference two objects corresponding to their two pointers.
+Also remember that the roots of the program are the objects that are immediately referenced by a program at its current state.
+So, since `cons`es reference two objects, when we allocate memory and define a `cons`, we need to make sure that the two objects that the `cons` references stay alive after garbage collection.
+
+In other words, suppose we have the following stored in memory:
+
+| Address | Value |
+|:---:|:---:|
+| `0` | `flat` |
+| `1` | `1` |
+| `2` | `flat` |
+| `3` | `2` |
+| `4` | `flat` |
+| `5` | `3` |
+| `6` | |
+| `7` | |
+| `8` | |
+
+And our only root at the moment in the `flat` with value `3` stored at address `4`.
+If we were to allocate a `cons` referencing `0` and `2`, we need to make sure that the objects at `0` and `2` ALSO stay alive post-garbage collection.
+Therefore, `0` and `2` effectively become roots at allocation.
+We need to pass this information on to the collector.
+Hence the two arguments: `collectGarbage(root1, root2)`.
+Why do we only need two?
+Well, because the maximum number of objects that could be referenced by an object we're allocating is two.
+So, the maximum number of objects that effectively become roots (we'll call them pseudo-roots) at allocation is two.
+
+Great!
+Now that that's cleared up, we can move on to the next step: "iterating through the roots and copying them over."
+
+Annnnnnd, let's pause here again.
+We said that we effectively create up to two new pseudo-roots at allocation.
+We need to know the addresses of the pseudo-roots after garbage collection in order to allow our object to reference them.
+For example, if we have our `cons` referencing objects at addresses `0` and `2` and garbage collection moves those objects to addresses `20` and `22` respectively, then our `cons` now needs to reference the objects at addresses `20` and `22`.
+Since we clear out the From Space after allocation and so remove all forwarding pointers, we need to return the new addresses of our two pseudo-roots.
+So, we need to handle them separately.
+
+First, let's consider what we should do if we don't have any pseudo-roots.
+We'll represent this by setting the two pseudo-roots to `false` and just returning `false` for each, effectively ignoring them.
+
+If we do have pseudo-roots to copy, we should copy them over and return the new addresses.
+Fortunately for us, we wrote `copyFrom(pointer)` in such a way that it already returns the new address of whatever pointer we pass it.
+So, our code becomes:
+
 ```js
-class TwoSpaceCopyingCollector extends Collector {
-    constructor(size) {
-        super();
+...
+collectGarbage(root1, root2) {
+    ...
+    let newRoot1 = false;
+    let newRoot2 = false;
 
-        if (!isInteger(size) || size <= 6) {
-            console.error(`new Collector: illegal size: ${size}`);
+    ...
+    
+    if (root1 != false) {
+        newRoot1 = this.copyFrom(root1);
+        this.moveRoot(root1, newRoot1);
+        ...
+    }
+    if (root2 != false) {
+        newRoot2 = this.copyFrom(root2);
+        this.moveRoot(root2, newRoot2);
+        ...
+    }
+    ...
+    
+    return [newRoot1, newRoot2];
+}
+...
+```
+
+Ok, and now we just need to iterate through the roots in the root set, right?
+Well, there's one caveat to that.
+We should make sure that we don't accidentally copy roots over twice.
+When might that happen?
+When the pseudo-roots were actually real roots already in the root set.
+If that's the case, we need to exclude those roots from the root set when we iterate through it.
+Fortunately, this can be done with a basic set operation: set difference.
+Once we get the difference of the two sets and know which roots to copy over, we just use our `copyFrom(pointer)` function to copy them and then update their locations in the root set.
+
+```js
+...
+collectGarbage(root1, root2) {
+    this.heap.heapSet(2, this.heap.heapGet(1));
+    this.heap.heapSet(3, this.heap.heapGet(1));
+    
+    let newRoot1 = false;
+    let newRoot2 = false;
+
+    let newRoots = new Set();
+    
+    if (root1 != false) {
+        newRoot1 = this.copyFrom(root1);
+        this.moveRoot(root1, newRoot1);
+        newRoots.add(root1);
+    }
+    if (root2 != false) {
+        newRoot2 = this.copyFrom(root2);
+        this.moveRoot(root2, newRoot2);
+        newRoots.add(root2);
+    }
+
+    let currentRoots = this.roots.difference(newRoots).values().toArray();
+    for (const root of currentRoots) {
+        let newRoot = this.copyFrom(root);
+        this.moveRoot(root, newRoot);
+    }
+    
+    ...
+    
+    return [newRoot1, newRoot2];
+}
+...
+```
+
+Once we've done that, there are only two steps left for this function:
+
+1. Iterate through the To Space
+2. Clean up collection
+
+For iterating through the To Space, when do we know when we're done?
+Well, remember back in the previous post, we said that this happens when the `free` and the `scan` pointers point to the same address.
+This is because that means that the address of the next object in the in To Space who references we need to copy (the `scan` pointer) is the same address as the first empty space in the To Space (the `free` pointer).
+In other words, the next object whose references we need to copy...doesn't exist!
+We're done.
+We can represent this with a simple `while` loop (and we'll fill in the `collectGarbageStep` function next):
+
+```js
+...
+collectGarbage(root1, root2) {
+    this.heap.heapSet(2, this.heap.heapGet(1));
+    this.heap.heapSet(3, this.heap.heapGet(1));
+    
+    let newRoot1 = false;
+    let newRoot2 = false;
+
+    let newRoots = new Set();
+    
+    if (root1 != false) {
+        newRoot1 = this.copyFrom(root1);
+        this.moveRoot(root1, newRoot1);
+        newRoots.add(root1);
+    }
+    if (root2 != false) {
+        newRoot2 = this.copyFrom(root2);
+        this.moveRoot(root2, newRoot2);
+        newRoots.add(root2);
+    }
+
+    let currentRoots = this.roots.difference(newRoots).values().toArray();
+    for (const root of currentRoots) {
+        let newRoot = this.copyFrom(root);
+        this.moveRoot(root, newRoot);
+    }
+    
+    while (this.heap.heapGet(2) < this.heap.heapGet(3)) {
+        this.collectGarbageStep();
+    }
+
+    ...
+    
+    return [newRoot1, newRoot2];
+}
+...
+```
+
+Lastly, we just need to clean up after garbage collection.
+We'll abstract this away into a function and write this one later too.
+And like that, the skeleton of our garbage collector is done!
+
+```js
+...
+collectGarbage(root1, root2) {
+    this.heap.heapSet(2, this.heap.heapGet(1));
+    this.heap.heapSet(3, this.heap.heapGet(1));
+    
+    let newRoot1 = false;
+    let newRoot2 = false;
+
+    let newRoots = new Set();
+    
+    if (root1 != false) {
+        newRoot1 = this.copyFrom(root1);
+        this.moveRoot(root1, newRoot1);
+        newRoots.add(root1);
+    }
+    if (root2 != false) {
+        newRoot2 = this.copyFrom(root2);
+        this.moveRoot(root2, newRoot2);
+        newRoots.add(root2);
+    }
+
+    let currentRoots = this.roots.difference(newRoots).values().toArray();
+    for (const root of currentRoots) {
+        let newRoot = this.copyFrom(root);
+        this.moveRoot(root, newRoot);
+    }
+    
+    while (this.heap.heapGet(2) < this.heap.heapGet(3)) {
+        this.collectGarbageStep();
+    }
+
+    this.cleanUpCollection();
+    
+    return [newRoot1, newRoot2];
+}
+...
+```
+
+### Garbage Collection Steps
+
+Now that we have our skeleton, we're getting close to being done with garbage collection.
+Up next is implementing the code that we execute on each object in the To Space.
+The steps here are incredibly simple:
+
+1. Figure out what type of object is being stored at the current value of the `scan` pointer
+2. If it references something, copy over what it references
+3. Update our `scan` pointer
+
+Let's get started!
+
+Since this all relies on the object at the current value of the `scan` pointer, first we should get the `scan` pointer.
+Then, just like in `copyFrom(pointer)`, we do a something different depending on what type of object is stored here:
+
+```js
+...
+collectGarbageStep() {
+    let scanPointer = this.heap.heapGet(2);
+    let tag = this.heap.heapGet(scanPointer);
+    switch(tag) {
+        case "flat":
+            ...
+        case "cons":
+            ...
+        default:
+            console.error(`Collector.collectGarbage: unknown tag: ${tag}`);
             return null;
-        }
-
-        this.heap = new Heap(size);
-        let fromPointer = 4;
-        let toPointer = integerDivision(size - 4, 2) + 4;
-        this.heap.heapFill(0, size, "free");
-        this.heap.heapSet(0, fromPointer);
-        this.heap.heapSet(1, toPointer);
-        this.heap.heapSet(2, fromPointer);
-        this.heap.heapSet(3, toPointer);
-
-    }
-    
-    copyFrom(pointer) {
-        let freePointer = this.heap.heapGet(3);
-        switch(this.heap.heapGet(pointer)) {
-            case "forward":
-                return this.heap.heapGet(pointer + 1);
-            case "flat":
-                this.heap.heapSet(freePointer, "flat");
-                this.heap.heapSet(freePointer + 1, this.heap.heapGet(pointer + 1));
-                this.heap.heapSet(pointer, "forward");
-                this.heap.heapSet(pointer + 1, freePointer);
-                this.heap.heapSet(3, freePointer + 2);
-                break;
-            case "cons":
-                this.heap.heapSet(freePointer, "cons");
-                this.heap.heapSet(freePointer + 1, this.heap.heapGet(pointer + 1));
-                this.heap.heapSet(freePointer + 2, this.heap.heapGet(pointer + 2));
-                this.heap.heapSet(pointer, "forward");
-                this.heap.heapSet(pointer + 1, freePointer);
-                this.heap.heapSet(3, freePointer + 3);
-                break;
-            default:
-                console.error(`Collector.copyFrom: unknown tag: ${this.heap.heapGet(pointer)}`);
-                return null;
-        }
-        return freePointer;
-    }
-    
-    collectGarbageStep() {
-        let scanPointer = this.heap.heapGet(2);
-        let tag = this.heap.heapGet(scanPointer);
-        switch(tag) {
-            case "flat":
-                this.heap.heapSet(2, scanPointer + 2);
-                break;
-            case "cons":
-                this.heap.heapSet(scanPointer + 1, this.copyFrom(this.heap.heapGet(scanPointer + 1)));
-                this.heap.heapSet(scanPointer + 2, this.copyFrom(this.heap.heapGet(scanPointer + 2)));
-                this.heap.heapSet(2, scanPointer + 3);
-                break;
-            default:
-                console.error(`Collector.collectGarbage: unknown tag: ${tag}`);
-                return null;
-        }
-    }
-    
-    collectGarbage(root1, root2) {
-        this.heap.heapSet(2, this.heap.heapGet(1));
-        this.heap.heapSet(3, this.heap.heapGet(1));
-        
-        let newRoot1 = false;
-        let newRoot2 = false;
-
-        let newRoots = new Set();
-        
-        if (root1 != false) {
-            newRoot1 = this.copyFrom(root1);
-            this.moveRoot(root1, newRoot1);
-            newRoots.add(root1);
-        }
-        if (root2 != false) {
-            newRoot2 = this.copyFrom(root2);
-            this.moveRoot(root2, newRoot2);
-            newRoots.add(root2);
-        }
-
-        let currentRoots = this.roots.difference(newRoots).values().toArray();
-        for (const root of currentRoots) {
-            let newRoot = this.copyFrom(root);
-            this.moveRoot(root, newRoot);
-        }
-        
-        while (this.heap.heapGet(2) < this.heap.heapGet(3)) {
-            this.collectGarbageStep();
-        }
-
-        this.cleanUpCollection();
-        
-        return [newRoot1, newRoot2];
-    }
-    
-    cleanUpCollection() {
-        let oldFromPointer = this.heap.heapGet(0);
-        let oldToPointer = this.heap.heapGet(1);
-        
-        let availableAllocationSpace = Math.abs(oldToPointer - oldFromPointer);
-
-        this.heap.heapFill(oldFromPointer, oldFromPointer + availableAllocationSpace, "free");
-        
-        this.heap.heapSet(0, oldToPointer);
-        this.heap.heapSet(1, oldFromPointer);
-        
-        if (oldToPointer >= oldFromPointer) {
-            this.heap.heapSet(3, (oldFromPointer - 4) * 2 + 4);
-        } else {
-            this.heap.heapSet(3, oldFromPointer);
-        }
-    }
-    
-    spaceExists(amount) {
-        return this.heap.heapGet(3) >= (this.heap.heapGet(2) + amount);
-    }
-    
-    allocate(data, asRoot = false) {
-        let allocationPointer = this.heap.heapGet(2);
-        
-        switch (data.tag) {
-            case "flat":
-                if (this.spaceExists(2)) {
-                    this.heap.heapSet(allocationPointer, "flat");
-                    this.heap.heapSet(allocationPointer + 1, data.value);
-                    this.heap.heapSet(2, allocationPointer + 2);
-                    if (asRoot) {
-                        this.addRoot(allocationPointer);
-                    }
-                } else {
-                    this.collectGarbage(false, false);
-                    if (this.spaceExists(2)) {
-                        allocationPointer = this.heap.heapGet(2);
-                        this.heap.heapSet(allocationPointer, "flat");
-                        this.heap.heapSet(allocationPointer + 1, data.value);
-                        this.heap.heapSet(2, allocationPointer + 2);
-                        if (asRoot) {
-                            this.addRoot(allocationPointer);
-                        }
-                    } else {
-                        console.error(`Collector.allocate: out of memory in allocating: (flat ${data.value})`);
-                        return null;
-                    }
-                }
-                break;
-            case "cons":
-                if (this.spaceExists(3)) {
-                    this.heap.heapSet(allocationPointer, "cons");
-                    this.heap.heapSet(allocationPointer + 1, data.root1);
-                    this.heap.heapSet(allocationPointer + 2, data.root2);
-                    this.heap.heapSet(2, allocationPointer + 3);
-                    if (asRoot) {
-                        this.addRoot(allocationPointer);
-                    }
-                } else {
-                    let [newRoot1, newRoot2] = this.collectGarbage(data.root1, data.root2);
-                    if (this.spaceExists(3)) {
-                        allocationPointer = this.heap.heapGet(2);
-                        this.heap.heapSet(allocationPointer, "cons");
-                        this.heap.heapSet(allocationPointer + 1, newRoot1);
-                        this.heap.heapSet(allocationPointer + 1, newRoot2);
-                        this.heap.heapSet(2, allocationPointer + 3);
-                        if (asRoot) {
-                            this.addRoot(allocationPointer);
-                        }
-                    } else {
-                        console.error(`Collector.allocate: out of memory in allocating: (cons ${data.root1} ${data.root2})`);
-                        return null;
-                    }
-                }
-                break;
-            default:
-                console.error(`Collector.allocate: unknown tag: ${tag}`);
-                return null;
-        }
-
-        return allocationPointer;
     }
 }
+...
 ```
+
+Note that we only need to consider `flat`s and `cons`es.
+Why?
+Because `forward`ing pointers can only exist in the From Space since they point from the From Space to the To Space.
+
+The `flat` case is simpler, so we'll start with it.
+If the object at the `scan` pointer is a `flat`, it doesn't reference anything.
+Therefore, we don't need to copy anything.
+Therefore, we just need to update the `scan` pointer.
+Since `flat`s take up two addresses, we have to increment the `scan` pointer by 2:
+
+```js
+...
+collectGarbageStep() {
+    let scanPointer = this.heap.heapGet(2);
+    let tag = this.heap.heapGet(scanPointer);
+    switch(tag) {
+        case "flat":
+            this.heap.heapSet(2, scanPointer + 2);
+            break;
+        case "cons":
+            ...
+        default:
+            console.error(`Collector.collectGarbage: unknown tag: ${tag}`);
+            return null;
+    }
+}
+...
+```
+
+The `cons` case is almost the same; it's only very barely different.
+All we need to do differently is:
+
+1. Copy each object referenced by the `cons` from the From Space into the To Space
+2. Update the `cons`'s pointers to point to the new addresses of the objects it references
+3. Bump the `scan` pointer by 3 and not 2
+
+We can complete steps 1. and 2. in a single line of code for each reference because `copyFrom(pointer)` returns the new address of an object in the To Space.
+So, the case becomes:
+
+```js
+...
+collectGarbageStep() {
+    let scanPointer = this.heap.heapGet(2);
+    let tag = this.heap.heapGet(scanPointer);
+    switch(tag) {
+        case "flat":
+            this.heap.heapSet(2, scanPointer + 2);
+            break;
+        case "cons":
+            this.heap.heapSet(scanPointer + 1, this.copyFrom(this.heap.heapGet(scanPointer + 1)));
+            this.heap.heapSet(scanPointer + 2, this.copyFrom(this.heap.heapGet(scanPointer + 2)));
+            this.heap.heapSet(2, scanPointer + 3);
+            break;
+        default:
+            console.error(`Collector.collectGarbage: unknown tag: ${tag}`);
+            return null;
+    }
+}
+...
+```
+
+And just like that, we're done with the garbage collection steps!
+
+### Cleaning Up
+
+We are so close to the finish line!
+We just need to clean up the mess that we made when collecting garbage.
+This isn't as scary as it might sound.
+The basic outline is:
+
+1. Empty out the old From Space
+2. Swap the pointers to the From Space and the To Space
+3. Set our new allocation pointer and max allocation pointer
+
+Emptying out the old From Space is pretty easy.
+We just need to know where it starts.
+Fortunately, we have a pointer that tells us where it starts.
+Finding where it ends takes a bit of math, but it's not too bad.
+First, we need to figure out how much space the From Space takes up.
+We calculated this when we instantiated the From Space pointer and the To Space pointer—we set the To Space pointer to be exactly after the end of the From Space.
+Since the only change we make to the values of the Two Space pointer and the From Space pointer is swapping them, this means that they will always be the same distance apart.
+This means that we can always get the absolute value of the difference between them and use that to determine how big they are.
+Then, we just fill that space with `empty`:
+
+```js
+...
+cleanUpCollection() {
+    let oldFromPointer = this.heap.heapGet(0);
+    let oldToPointer = this.heap.heapGet(1);
+    
+    let availableAllocationSpace = Math.abs(oldToPointer - oldFromPointer);
+
+    this.heap.heapFill(oldFromPointer, oldFromPointer + availableAllocationSpace, "free");
+    ...
+}
+...
+```
+
+Swapping the From Space pointer and the To Space pointer is even easier:
+
+```js
+...
+cleanUpCollection() {
+    let oldFromPointer = this.heap.heapGet(0);
+    let oldToPointer = this.heap.heapGet(1);
+    
+    let availableAllocationSpace = Math.abs(oldToPointer - oldFromPointer);
+
+    this.heap.heapFill(oldFromPointer, oldFromPointer + availableAllocationSpace, "free");
+    
+    this.heap.heapSet(0, oldToPointer);
+    this.heap.heapSet(1, oldFromPointer);
+    ...
+}
+...
+```
+
+Lastly, we just need to set our new allocation and max allocation pointers.
+We actually have one of these already set.
+Since the next available space in the new From Space is the same as the next available space in the old To Space when collecting garbage, this value is currently stored in both the `scan` and the `free` pointers.
+So, to update the allocation pointer, we do nothing—we just leave it be.
+
+Updating the max allocation pointer is only the smallest bit more difficult.
+Since we know how much space we have for allocating and we know the start of the space we have for allocating (the start of the new From Space/old To Space), we just need to add those together:
+
+```js
+...
+cleanUpCollection() {
+    let oldFromPointer = this.heap.heapGet(0);
+    let oldToPointer = this.heap.heapGet(1);
+    
+    let availableAllocationSpace = Math.abs(oldToPointer - oldFromPointer);
+
+    this.heap.heapFill(oldFromPointer, oldFromPointer + availableAllocationSpace, "free");
+    
+    this.heap.heapSet(0, oldToPointer);
+    this.heap.heapSet(1, oldFromPointer);
+
+    this.heap.heapSet(3, oldToPointer + availableAllocationSpace);
+}
+...
+```
+
+And just like that, we're completely done with writing our garbage collection algorithm!
+
+### Wrapping Up
+
+We just wrote all of the code needed to implement Cheney's algorithm in code.
+The only thing left for us to do is to write an allocation function; however, that's pretty easy too.
+All we have to do is:
+
+1. Check if there's enough memory available to allocate our object
+2. If there is, allocate it and be done
+3. If not, collect garbage
+4. Try to allocate it again
+5. If there's enough space, we're done
+6. If not, throw an error
+
+I'll leave this as an exercise for you all to try to implement.
+If you run into trouble or want to see my implementation, check out the [full code here](https://github.com/ellifteria/cheneys-gc.js/blob/main/cheneys-gc.js).
+
+## Conclusion
+
+Almost 5,000 words later, we finally have Cheney's algorithm implemented.
+If you want to try out the collector in the browser, check out [this page](../../06/240605-gc-playground/)!
+I hope this little series helped you understand garbage collection!

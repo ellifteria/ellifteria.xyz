@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+
+        <script src="GCLib.js"></script>
+        <script src="cheneys-gc.js"></script>
+
+        <script src="index.js"></script>
+
+    </head>
+
+    <body onload="main()">
+
+        
+        <textarea id="collectorCode" rows="20" cols="100">let collector = new TwoSpaceCopyingCollector(20);
+let ptr1 = collector.allocate({tag: "flat", value: 1});
+console.log(ptr1);
+let ptr2 = collector.allocate({tag: "flat", value: 2});
+console.log(ptr2);
+collector.allocate({tag: "cons", root1: ptr1, root2: ptr2}, true);
+console.log(collector.heap.data);
+collector.allocate({tag: "flat", value: 3});
+console.log(collector.heap.data);</textarea>
+
+        <button type="button" onclick="runCollector()">Run</button>
+
+        <pre id="loggerOutput"></pre>
+
+    </body>
+
+</html>
+
+
+
+

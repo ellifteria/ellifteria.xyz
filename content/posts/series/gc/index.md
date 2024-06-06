@@ -23,5 +23,9 @@ pages:
         summary: A Deep Dive into Implementing a Two-Space Copying Garbage Collector
         link: /posts/24/05/240527-semispace-gc-code
         date: 28 May 2024
+    -   name: Cheney's Algorithm Playground
+        link: /posts/24/06/240605-gc-playground
+        date: 05 Jun 2024
+        summary: The Garbage Collector We Wrote; Running in the Browser
 navbarName: Notes
 ---
