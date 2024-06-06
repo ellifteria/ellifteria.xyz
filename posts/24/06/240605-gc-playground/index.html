@@ -162,9 +162,9 @@
 
 <p>Here's a live demo of the Cheney's algorithm code we wrote <a href="../../05/240527-semispace-gc-code/">here</a>!
 The full code can be found on <a href="https://github.com/ellifteria/cheneys-gc.js">GitHub here</a>.</p>
-<script src="./cheneys-gc.js/GCLib.js"></script>
-<script src="./cheneys-gc.js/cheneys-gc.js"></script>
-<script src="./cheneys-gc.js/index.js"></script>
+<script src="/scripts/cheneys-gc.js/GCLib.js"></script>
+<script src="/scripts/cheneys-gc.js/cheneys-gc.js"></script>
+<script src="/scripts/cheneys-gc.js/index.js"></script>
 <textarea style="padding: 10px; max-width: 100%; line-height: 1.5; border-radius: 5px; border: 1px solid #ccc; box-shadow: 1px 1px 1px #999; font-family: Consolas, Menlo, Courier, monospace;" id="collectorCode" rows="20" cols="100">let collector = new TwoSpaceCopyingCollector(20);
 let ptr1 = collector.allocate({tag: "flat", value: 1}, true);
 console.log(ptr1);
