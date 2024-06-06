@@ -8,7 +8,7 @@
         <link rel="stylesheet" href="/css/main.css">
 
         
-    <title>ellifteria.xyz | Garbage Collection</title>
+    <title>ellifteria.xyz | Cheney&#39;s Algorithm Playground</title>
 
 
         
@@ -125,7 +125,11 @@
                 
 
     
-    <h1>Garbage Collection</h1>
+    <h1>Cheney&#39;s Algorithm Playground</h1>
+    
+    <p>
+        Series: <a href="/posts/series/gc">Garbage Collection</a>
+    </p>
     
     
     
@@ -136,14 +140,14 @@
                     /
                     <strong>
                         
-                        Series
+                        <a href="/posts" >Posts</a>
                         
                     </strong>
                 
                     /
                     <strong>
                         
-                        <a href="/posts/series/gc" >Garbage Collection</a>
+                        <a href="/posts/24/06/240605-gc-playground/" class="self">Cheney&#39;s Algorithm Playground</a>
                         
                     </strong>
                 
@@ -151,74 +155,30 @@
         </div>
     
 
-    <p class="subtitle">A Series of Posts on Garbage Collection</p>
+    <p class="subtitle">The Garbage Collector We Wrote; Running in the Browser</p>
 
 
     
-        
+
+<p>Here's a live demo of the Cheney's algorithm code we wrote <a href="../../05/240527-semispace-gc-code/">here</a>!
+The full code can be found on <a href="https://github.com/ellifteria/cheneys-gc.js">GitHub here</a>.</p>
+<script src="./cheneys-gc.js/GCLib.js"></script>
+<script src="./cheneys-gc.js/cheneys-gc.js"></script>
+<script src="./cheneys-gc.js/index.js"></script>
+<textarea style="padding: 10px; max-width: 100%; line-height: 1.5; border-radius: 5px; border: 1px solid #ccc; box-shadow: 1px 1px 1px #999; font-family: Consolas, Menlo, Courier, monospace;" id="collectorCode" rows="20" cols="100">let collector = new TwoSpaceCopyingCollector(20);
+let ptr1 = collector.allocate({tag: "flat", value: 1}, true);
+console.log(ptr1);
+let ptr2 = collector.allocate({tag: "flat", value: 2});
+console.log(ptr2);
+collector.allocate({tag: "cons", root1: ptr1, root2: ptr2});
+console.log(collector.heap.data);
+collector.allocate({tag: "flat", value: 3}, true);
+console.log(collector.heap.data);</textarea>
+<p><button type="button" style="background-color: #111; border: none; color: #f8f8f8; padding: 16px 32px; text-decoration: none; margin: 4px 2px; cursor: pointer;" onclick="runCollector()">Run</button></p>
+<pre><code class="language-shell" id="loggerOutput"></code></pre>
 
 
 
-
-        
-    
-        <p>
-        <a href="/posts/24/05/240522-gc"><strong>Garbage Collection, Broadly</strong></a>
-        
-        | <em>23 May 2024</em>
-        
-        
-            <br>
-            An Introduction to Garbage Collection
-        
-        </p>
-    
-        <p>
-        <a href="/posts/24/05/240523-gc-math"><strong>Garbage Collection (But With Math)</strong></a>
-        
-        | <em>25 May 2024</em>
-        
-        
-            <br>
-            Mathematically Modeling Garbage Collection
-        
-        </p>
-    
-        <p>
-        <a href="/posts/24/05/240523-semispace-gc"><strong>Semi-Space Garbage Collection Part 1</strong></a>
-        
-        | <em>27 May 2024</em>
-        
-        
-            <br>
-            A Deep Dive into Implementing a Two-Space Copying Garbage Collector
-        
-        </p>
-    
-        <p>
-        <a href="/posts/24/05/240527-semispace-gc-code"><strong>Semi-Space Garbage Collection Part 2</strong></a>
-        
-        | <em>28 May 2024</em>
-        
-        
-            <br>
-            A Deep Dive into Implementing a Two-Space Copying Garbage Collector
-        
-        </p>
-    
-        <p>
-        <a href="/posts/24/06/240605-gc-playground"><strong>Cheney&#39;s Algorithm Playground</strong></a>
-        
-        | <em>05 Jun 2024</em>
-        
-        
-            <br>
-            The Garbage Collector We Wrote; Running in the Browser
-        
-        </p>
-    
-
-    
 
 
             </section>
@@ -237,8 +197,6 @@
     </body>
 
 </html>
-
-
 
 
 
