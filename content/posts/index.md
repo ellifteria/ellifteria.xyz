@@ -7,6 +7,12 @@ path:
         link: /posts
         self: true
 postSections:
+    -   name: Work In Progress
+        posts:
+            -   name: Esterel in Racket Part 2
+                summary: A Brief Retrospective
+            -   name: Modeling Futures
+                summary: Modeling the Semantics of Future in PLT Redex
     -   name: June 2024
         posts:
             -   name: Cheney's Algorithm Playground

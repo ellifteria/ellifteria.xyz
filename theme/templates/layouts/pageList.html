@@ -7,7 +7,7 @@
 {{define "pageLinks"}}
     {{range $page := .PageParams.pages}}
         <p>
-        <a href="{{$page.link}}"><strong>{{$page.name}}</strong></a>
+        {{if $page.link}}<a href="{{$page.link}}">{{end}}<strong>{{$page.name}}</strong>{{if $page.link}}</a>{{end}}
         {{if $page.date}}
         | <em>{{$page.date}}</em>
         {{end}}

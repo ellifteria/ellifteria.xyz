@@ -9,7 +9,7 @@
     <h2 id="{{$section.name}}">{{$section.name}}</h2>
     {{range $post := $section.posts}}
     <p>
-        <a href="{{$post.link}}"><strong>{{$post.name}}</strong></a>
+        {{if $post.link}}<a href="{{$post.link}}">{{end}}<strong>{{$post.name}}</strong>{{if $post.link}}</a>{{end}}
         {{if $post.date}}
         | <em>{{$post.date}}</em>
         {{end}}

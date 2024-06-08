@@ -33,16 +33,7 @@ There are a few implementations of Esterel or Esterel-like languages<label for="
 <span class="sidenote">
     such as [HipHop.js](https://github.com/manuel-serrano/hiphop)
 </span>.
-Here, I'm using<label for="sidenote--devRktStrl"
-       class="margin-toggle sidenote-number">
-</label>
-<input type="checkbox"
-       id="sidenote--devRktStrl"
-       class="margin-toggle"/>
-<span class="sidenote">
-    ...[[/tiwo/2024/nu/esterel/index|and working on adding to]]...
-</span>
-the Racket implementation of Esterel<label for="sidenote--racketEsterel"
+Here, I'm using and adding onto the Racket implementation of Esterel<label for="sidenote--racketEsterel"
        class="margin-toggle sidenote-number">
 </label>
 <input type="checkbox"
