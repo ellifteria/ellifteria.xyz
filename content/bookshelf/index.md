@@ -13,14 +13,13 @@ navbarName: Bookshelf
 
 | Progress | Book | Author |
 |:---:|:---:|:---:|
-| 33% | *The First Book of Swords* | Fred Saberhagen |
+| 18% | *A Canticle for Leibowitz* | Walter M. Miller Jr. |
 
 ### On Hold at the Moment
 
 | Progress | Book | Author |
 |:---:|:---:|:---:|
 | 26% | *Howling Dark* | Christopher Ruocchio |
-| 47% | *Project Hail Mary* | Andy Weir |
 <!-- 27% | *Red Rising* | Pierce Brown -->
 <!-- 5% | *Hadji Murat* | Leo Tolstoy -->
 <!-- 5% | *Born in Tibet* | Chogyam Trungpa -->
@@ -33,6 +32,8 @@ navbarName: Bookshelf
 
 |Rating | Book | Author|
 |:---:|:---:|:---:|
+| ⭐ ⭐ ⭐ ⭐ | *Project Hail Mary* | Andy Weir |
+| ⭐ ⭐ ⭐ ⭐ | *The First Book of Swords* | Fred Saberhagen |
 | ⭐️ ⭐️ ⭐️ ⭐️ ⭐️ | *Mistborn: The Final Empire* | Brandon Sanderson |
 | ⭐️ ⭐️ ⭐️ ⭐️ ⭐️ | *Queen Amid Ashes* | Christopher Ruocchio |
 | ⭐️ ⭐️ ⭐️ ⭐️ ⭐️ | *The Lesser Devil* | Christopher Ruocchio |
