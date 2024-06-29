@@ -4,7 +4,7 @@ summary: Elli's Digital Garden
 template: home
 socials:
     -   name: Website
-        link: https://elliberes.me
+        link: https://ellifteria.github.io
     -   name: GitHub
         link: https://github.com/ellifteria
     -   name: Mastodon
